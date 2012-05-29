@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<registration_data version="1.0">
+   <environment>
+      <hostname>c5bplesk.test.com</hostname>
+      <hostId>10ace300</hostId>
+      <osName>Linux</osName>
+      <osVersion>2.6.18-194.26.1.el5.028stab070.14</osVersion>
+      <osArchitecture>i386</osArchitecture>
+      <systemModel>i386</systemModel>
+      <systemManufacturer/>
+      <cpuManufacturer>GenuineIntel</cpuManufacturer>
+      <serialNumber/>
+   </environment>
+   <registry urn="urn:st:7bc1c539-a7ce-4d66-aea0-e5c345f1a49c" version="1.0">
+      <service_tag>
+         <instance_urn>urn:st:494797c5-4456-44d7-bd98-c580130c6b9c</instance_urn>
+         <product_name>Java SE 6 Development Kit</product_name>
+         <product_version>1.6.0_24</product_version>
+         <product_urn>urn:uuid:b58ef9a8-5ae8-11db-a023-080020a9ed93</product_urn>
+         <product_parent_urn>urn:uuid:fdc90b21-018d-4cab-b866-612c7c119ed3</product_parent_urn>
+         <product_parent>Java Platform Standard Edition 6 (Java SE 6)</product_parent>
+         <product_defined_inst_id>id=1.6.0_24-b07 i386,dir=/usr/java/jdk1.6.0_24/jre</product_defined_inst_id>
+         <product_vendor>Sun Microsystems</product_vendor>
+         <platform_arch>i386</platform_arch>
+         <timestamp>2011-02-23 16:27:19 GMT</timestamp>
+         <container>global</container>
+         <source>jdk</source>
+         <installer_uid>-1</installer_uid>
+      </service_tag>
+   </registry>
+</registration_data>

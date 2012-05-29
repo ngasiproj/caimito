@@ -1,0 +1,13 @@
+attributes{
+resourceuser
+path
+privilege:number
+maxspace:number
+}
+access{
+view:owner
+delete:owner
+update:owner
+list:owner
+add:shaftadmin,member,enduser
+}
