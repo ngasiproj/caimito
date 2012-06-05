@@ -50,6 +50,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Map;
 import java.io.ByteArrayInputStream;
+import java.util.Iterator;
 
 public class OpenStackResourceObj extends CloudResourceObj
     {
@@ -469,8 +470,8 @@ try{
 	return cl;
 	}
 	
-	 protected static String X_Auth_Token = null;
-	 protected static String X_Storage_Url = null;
+	 protected static String X_Auth_Token = null; //"5bba5c21-3c8c-4f6b-8b17-9adb7c2ad4ea";
+	 protected static String X_Storage_Url = null; //"http://swift.rc.nectar.org.au:8888/v1/AUTH_793";
 	 protected static long authtime = 0;
 	 void auth()throws CaimitoException{
 		try{
@@ -478,13 +479,48 @@ try{
 		Hashtable<String,String> h = new Hashtable<String,String>();
 		h.put("X-Auth-User",CaimitoConfig.getConfig().getString("cloud.username"));
 		h.put("X-Auth-Key",CaimitoConfig.getConfig().getString("cloud.api.key_password"));
-		String nv = HttpClientUtil.trustGet(h,CaimitoConfig.getConfig().getString("cloud.url"));
-		//(h + " THEY AUTHO " + nv);
-		
-		
-		
+		String curl = CaimitoConfig.getConfig().getString("cloud.url");
+		if (curl.endsWith("/"))
+			curl = curl.substring(0,curl.length() - 1);
+		String nv = HttpClientUtil.trustGet(h,curl);
+			
 		X_Storage_Url = h.get("X-Storage-Url");
 		X_Auth_Token = h.get("X-Auth-Token");
+		if (X_Storage_Url == null || X_Auth_Token == null){
+			 
+			if (!curl.endsWith("/tokens"))
+			curl = curl + "/tokens";
+		Hashtable<String,String> pc = new Hashtable<String,String>();
+		pc.put("username",CaimitoConfig.getConfig().getString("cloud.username"));
+		pc.put("password",CaimitoConfig.getConfig().getString("cloud.api.key_password"));
+	
+		Hashtable<String,Hashtable<String,String>> auh = new Hashtable<String,Hashtable<String,String>>();
+		auh.put("passwordCredentials",pc);
+	
+		Hashtable tl = new Hashtable();
+		tl.put("auth",auh);
+		
+		h = new Hashtable<String,String>();
+		h.put("Content-type","application/json");
+
+		Gson gson = new Gson();
+		String json = gson.toJson(tl);
+		ByteArrayInputStream dest = new ByteArrayInputStream(json.getBytes());
+
+		nv = HttpClientUtil.trustPost(h,curl,dest);
+		//Gson gson = new Gson();
+		OSV2TokenResponse oa = 	gson.fromJson(nv, new TypeToken<OSV2TokenResponse>() {}.getType());
+		Map<String,String> eps = oa.getResponse();
+		if (CaimitoConfig.getConfig().getString("cloud.endpoint.access").equals("internal"))
+		X_Storage_Url = eps.get("internalURL");
+		else
+			X_Storage_Url = eps.get("publicURL");	
+		X_Auth_Token = oa.access.token.id;
+		if (X_Storage_Url == null || X_Auth_Token == null)
+		CaimitoException.throwException("unable_to_auth");
+
+		
+		}
 		authtime = System.currentTimeMillis();
 		}catch (Throwable e){
 			e.printStackTrace();
@@ -519,7 +555,7 @@ try{
 		//("***doList1 " + X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + CaimitoUtil.urlEncode(p2) + pars + " --> " + h + " h <-->nv ");		 
 //+ CaimitoUtil.urlEncode(p2)
 		String nv = HttpClientUtil.trustGet(h,X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store")  + pars);
-		//("doList " + X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + CaimitoUtil.urlEncode(p2) + pars + " --> " + h + " h <-->nv " + nv);		 
+		
 		if (nv == null || nv.length() < 1)return l;
 		ByteArrayInputStream bin = new ByteArrayInputStream(nv.getBytes());
 		EZArrayList lblv = new EZArrayList(bin);
@@ -674,7 +710,42 @@ class OSRAttribute{
 	}
 
 }
+class OSV2TokenResponse {
+	public TokenObj access = null;
 
+	//public Hashtable<String,Hashtable<String,String>> access = null;
+	public Map<String,String> getResponse(){
+		Hashtable<String,String> res = new Hashtable<String,String>();
+			 Iterator<EndPoints> en = 	access.serviceCatalog.iterator();
+		//String n = null;
+		EndPoints v = null;
+		while(en.hasNext()){
+		v = en.next();
+		if (v.type.equals("object-store") && v.name.equals("swift")){
+			 Iterator<Map<String,String>> enp = 	v.endpoints.iterator();
+	
+				if(enp.hasNext())
+				return enp.next();	
+		}
+		}
+	return res;
+	}
+
+}
+ class TokenObj{
+	 public TokenObj2 token = null;
+	 public List<EndPoints> serviceCatalog = null;
+
+ }
+ class EndPoints{
+	public List<Map<String,String>> endpoints = null;
+	public String type = null;
+	public String name = null;
+	
+ }
+ class TokenObj2{
+	public  String id = null;
+ }
 /*class OSRObjDetails{
 
 	static         DateFormat dfm = null;

@@ -9,6 +9,9 @@ cloud.api.key_password=fffffffffffffffffffffffffffffffffff
 cloud.url=https://dal05.objectstorage.softlayer.net/auth/v1.0/
 #cloud.url=https://dal05.objectstorage.service.networklayer.com/auth/v1.0
 
+#public,internal
+cloud.endpoint.access=public
+
 #minutes
 cloud.max_auth_interval=20
 #Tue, 24 Apr 2012 00:05:15 GMT

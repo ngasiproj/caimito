@@ -317,8 +317,7 @@ public class CaimitoWebdavServlet
         throws ServletException {
 
         super.init();
-
-        if (getServletConfig().getInitParameter("secret") != null)
+              if (getServletConfig().getInitParameter("secret") != null)
             secret = getServletConfig().getInitParameter("secret");
 
         if (getServletConfig().getInitParameter("maxDepth") != null)
@@ -338,7 +337,7 @@ public class CaimitoWebdavServlet
         
       		String rootPath = getServletConfig().getServletContext().getRealPath("/");
       		CaimitoConfig.caimitoroot = rootPath;
-      		//(rootPath + " YELLOW ini  " + CaimitoConfig.caimitoroot);
+      		System.out.println(" Caimito Version  " + CaimitoConfig.version);
 			CaimitoConfig.init();
 
     }

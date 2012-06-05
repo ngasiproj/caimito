@@ -51,6 +51,7 @@ public static String caimitouserreqobj = "caimitouserreqobj";
 	public static boolean cacheable = true;
 	public static String serverinfo = "Caimito";
 	public static String CAIMITO_CSS = null;
+	public static String version = "0.2";
 	public static void init()throws CaimitoException{
 			if (! new File(getConfigFile()).exists())
 			{
