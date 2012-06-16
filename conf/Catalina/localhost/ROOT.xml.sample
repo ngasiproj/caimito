@@ -1,0 +1,23 @@
+<Context path="/" docBase="/usr/caimito/webapps" crossContext="true">
+<Resource name="jdbc/caimito" auth="Container" type="javax.sql.DataSource"
+maxActive="200" maxIdle="20" maxWait="10000"
+username="caimito" password="tiger" driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+url="jdbc:derby:/usr/caimito/bin/caimito_db;create=true"/>
+
+<!-- MySQL
+<Resource name="jdbc/caimito" auth="Container" type="javax.sql.DataSource"
+maxActive="200" maxIdle="20" maxWait="10000" validationQuery="SELECT 1"  testOnBorrow="true"
+username="dbuser" password="tiger" driverClassName="com.mysql.jdbc.Driver"
+url="jdbc:mysql://localhost:3306/caimitoDB?autoReconnect=true"/>
+-->
+
+	<Resource
+		name="mail/MailSession"
+		auth="Container"
+		type="javax.mail.Session"
+		mail.transport.protocol="smtp"
+		mail.smtp.host="localhost"
+	/>
+
+
+</Context>

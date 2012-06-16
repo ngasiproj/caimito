@@ -1,0 +1,43 @@
+#optional - 1.0,2.0
+#cloud.api.version=
+
+#file,openstack
+resource=file
+#A Container or Bucket
+cloud.store=store1
+cloud.username=SLOS11111-1:SL11111
+cloud.api.key_password=fffffffffffffffffffffffffffffffffff
+
+cloud.url=https://dal05.objectstorage.softlayer.net/auth/v1.0/
+#cloud.url=https://dal05.objectstorage.service.networklayer.com/auth/v1.0
+
+#public,internal
+cloud.endpoint.access=public
+
+#minutes
+cloud.max_auth_interval=20
+#Tue, 24 Apr 2012 00:05:15 GMT
+cloud.obj.details.dateformat=EEE, dd MMM yyyy HH:mm:ss z
+#2012-04-24T00:05:15.474470
+#%Y-%m-%dT%H:%M:%S.000Z
+cloud.date.remove.end=true
+cloud.dateformat=yyyy-MM-dd'T'HH:mm:ss
+#%Y-%m-%dT%H:%M:%S.000Z
+#yyyy-MM-dd'T'HH:mm:ss.'Z'
+maxspace.units=GB
+file.resource.dir=/usr/caimito/drive
+SecurityRealmName=Caimito
+shaft.app=ca
+resource.dir.listing=true
+Microsoft-WebDAV-MiniRedir/6.1.7601.auth=digest
+protectedRoot=true
+cacheable=true
+cachedir=/usr/caimito/cache
+serverinfo=Caimito
+CAIMITO_CSS=H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#FF8FC2;font-size:22px;} H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#FF8FC2;font-size:16px;} H3 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#FF8FC2;font-size:14px;} BODY {font-family:Tahoma,Arial,sans-serif;color:black;background-color:white;} B {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#FF8FC2;} P {font-family:Tahoma,Arial,sans-serif;background:white;color:black;font-size:12px;}A {color : black;}A.name {color : black;}HR {color : #FF8FC2;}
+directory.title=Directory
+directory.parent=Parent
+directory.filename=Name
+directory.size=Size
+directory.lastModified=Date
+
