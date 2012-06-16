@@ -1,0 +1,44 @@
+May 23, 2012 7:49:31 AM org.apache.catalina.core.AprLifecycleListener init
+INFO: The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path: /idrive/usr/caimito/jdk/jre/lib/i386/server:/idrive/usr/caimito/jdk/jre/lib/i386:/idrive/usr/caimito/jdk/jre/../lib/i386:/usr/java/packages/lib/i386:/lib:/usr/lib
+May 23, 2012 7:49:32 AM org.apache.coyote.AbstractProtocol init
+INFO: Initializing ProtocolHandler ["http-bio-8619"]
+May 23, 2012 7:49:32 AM org.apache.coyote.AbstractProtocol init
+INFO: Initializing ProtocolHandler ["ajp-bio-8659"]
+May 23, 2012 7:49:32 AM org.apache.catalina.startup.Catalina load
+INFO: Initialization processed in 1258 ms
+May 23, 2012 7:49:32 AM org.apache.catalina.core.StandardService startInternal
+INFO: Starting service Catalina
+May 23, 2012 7:49:32 AM org.apache.catalina.core.StandardEngine startInternal
+INFO: Starting Servlet Engine: Apache Tomcat/7.0.27
+May 23, 2012 7:49:32 AM org.apache.catalina.startup.HostConfig deployDescriptor
+INFO: Deploying configuration descriptor /idrive/usr/caimito/conf/Catalina/localhost/ROOT.xml
+May 23, 2012 7:49:34 AM org.apache.coyote.AbstractProtocol start
+INFO: Starting ProtocolHandler ["http-bio-8619"]
+May 23, 2012 7:49:34 AM org.apache.coyote.AbstractProtocol start
+INFO: Starting ProtocolHandler ["ajp-bio-8659"]
+May 23, 2012 7:49:34 AM org.apache.catalina.startup.Catalina start
+INFO: Server startup in 2542 ms
+May 23, 2012 7:50:08 AM com.sun.jersey.api.core.PackagesResourceConfig init
+INFO: Scanning for root resource and provider classes in the packages:
+  org.shaft.server.rest
+May 23, 2012 7:50:08 AM com.sun.jersey.api.core.ScanningResourceConfig logClasses
+INFO: Root resource classes found:
+  class org.shaft.server.rest.RestAPI
+May 23, 2012 7:50:08 AM com.sun.jersey.api.core.ScanningResourceConfig init
+INFO: No provider classes found.
+May 23, 2012 7:50:08 AM com.sun.jersey.server.impl.application.WebApplicationImpl _initiate
+INFO: Initiating Jersey application, version 'Jersey: 1.10 11/02/2011 03:53 PM'
+May 23, 2012 8:09:47 AM org.apache.coyote.AbstractProtocol pause
+INFO: Pausing ProtocolHandler ["http-bio-8619"]
+May 23, 2012 8:09:47 AM org.apache.coyote.AbstractProtocol pause
+INFO: Pausing ProtocolHandler ["ajp-bio-8659"]
+May 23, 2012 8:09:47 AM org.apache.catalina.core.StandardService stopInternal
+INFO: Stopping service Catalina
+May 23, 2012 8:09:47 AM org.apache.coyote.AbstractProtocol stop
+INFO: Stopping ProtocolHandler ["http-bio-8619"]
+May 23, 2012 8:09:47 AM org.apache.coyote.AbstractProtocol stop
+INFO: Stopping ProtocolHandler ["ajp-bio-8659"]
+May 23, 2012 8:09:47 AM org.apache.coyote.AbstractProtocol destroy
+INFO: Destroying ProtocolHandler ["http-bio-8619"]
+May 23, 2012 8:09:47 AM org.apache.coyote.AbstractProtocol destroy
+INFO: Destroying ProtocolHandler ["ajp-bio-8659"]

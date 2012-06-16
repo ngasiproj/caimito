@@ -1,0 +1,4 @@
+172.16.0.190 - - [23/May/2012:07:50:11 -0700] "GET /ca/shaftrest/shaftusermgr/update?shaftpassword.new=lion&shaftuser=caimitoadmin&shaftpassword=caimito HTTP/1.1" 200 4496
+172.16.0.190 - - [23/May/2012:07:50:13 -0700] "GET /favicon.ico HTTP/1.1" 404 1196
+172.16.0.190 - - [23/May/2012:07:50:45 -0700] "GET / HTTP/1.1" 200 1263
+172.16.0.190 - - [23/May/2012:07:50:49 -0700] "GET /bin/ HTTP/1.1" 200 2008

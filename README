@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Caimito is an open source (Apache Software License 2.0) WebDAV,caching, and content-delivery server frontend for cloud storage. Caimito supports Softlayer Object Storage, Open Stack Storage, and Amazon S3. Caimito also features a REST interface for configuring user access. Caimito is ideal for Hosting and Reseller environments.
 
 Requirements
@@ -109,3 +110,116 @@ COMING SOON!
 
 Community
 Contact: support(AT)ngasi.com
+=======
+Caimito is an open source (Apache Software License 2.0) WebDAV,caching, and content-delivery server frontend for cloud storage. Caimito supports Softlayer Object Storage, Open Stack Storage, and Amazon S3. Caimito also features a REST interface for configuring user access. Caimito is ideal for Hosting and Reseller environments.
+
+Requirements
+Requires any Linux distro.
+
+Download
+http://cloud-drive.ngasi.com/s1/f1/caimito/public/caimito.zip
+
+Install
+cd to /usr directory
+unzip caimito contents to directory then copy 2 configuration files.
+cd /usr unzip -q -o -a caimito.zip cp /usr/caimito/conf/Catalina/localhost/ROOT.xml.sample /usr/caimito/conf/Catalina/localhost/ROOT.xml cp /usr/caimito/webapps/WEB-INF/caimito/config.properties.sample /usr/caimito/webapps/WEB-INF/caimito/config.properties
+
+Configure
+Database
+Caimito is installed with a default Derby Database.
+To change the database, edit the following file:
+/usr/caimito/conf/Catalina/localhost/ROOT.xml
+Resource Storage
+The resource storage type and access info is set in the following file:
+/usr/caimito/webapps/WEB-INF/caimito/config.properties
+The default storage type is "file". To change to a Cloud storage, edit the value for "resource". The value for Open Stack and Softlayer Object Storage would be "openstack" (Amazon S3 support coming soon). The values for "cloud.username", "cloud.api.key_password", "cloud.url", and "cloud.store" should be populated with the appropriate information. "cloud.store" is populated with the name of an already created "container" or "bucket".
+
+Run
+cd /usr/caimito/bin
+./startup.sh
+
+To run as a Deamon:
+./demon.sh
+
+To Stop:
+./shutdown.sh
+
+Access:
+Point any HTTP enabled client to:
+http://hostname:8619/
+NOTE: Make sure access to port 8619 is enabled through any firewall.
+
+By default access is restricted so you would be prompted to login. Login with the following information:
+User: caimitoadmin Password: caimito
+The above is the default Super Admin user. Follow the instructions below to change the password.
+
+Configuring Users:
+There are 4 default levels of Users. They are listed below in hierarchical order:
+Super Admin
+is the single user that has overriding control over all other users. The Super Admin has the privilege to create one or more Directory Admin and assign access to the Directory Admin to a sub directory.
+Directory Admin
+A Directory Admin has the privilege to create one or more Client and assign access to the client to a directory owned by the Directory Admin.
+Client
+A Client has the privilege to create one or more End User and assign access to the End User to a directory owned by the Client.
+End User
+Although the End User may have directory access, the End User has no administrative privilege.
+Configuring User access is a 2 step process. First the User is created, then the specific directory access is granted.
+Below is the steps to do so with the REST API. (The REST API is based on Shaftwork framework.)
+Create User
+http://hostname:8619/ca/shaftrest/shaftusermgr/add?shaftuser.new=user1&shaftpassword.new=tiger&shaftuser=caimitoadmin&shaftpassword=caimito
+Here a Directory Admin, user1, was created with the password tiger.
+Set Directory Privilege
+http://hostname:8619/ca/shaftrest/pathprivileges/add?shaftuser=caimitoadmin&shaftpassword=caimito&resourceuser=user1&path=dirpath1&privilege=2&maxspace=20
+Here user1, was assigned access to dirpath1 with a max space of 20GB. The directory path is an absolute path relative to the root directory path of the User (the root path for the Super Admin is /). So the newly protected path would look like:
+http://hostname:8619/dirpath1
+In the above example, the privilege was set with a value of 2. A privilege of 2 signifies READ/WRITE access. A privilege of 1 signifies READ only access.
+Privileges:
+1
+READ only
+2
+READ/WRITE
+Public Paths
+Authentication may not be required for all directory paths. In these situations, you set public path access - which means world read access to the directory.
+http://hostname:8619/ca/shaftrest/publicpaths/add?shaftuser=user1&shaftpassword=tiger&path=dirpath1/public&listing=false
+In the above example, the path, dirpath1/public, was set to world readable access. So the public path would look like:
+http://hostname:8619/dirpath1/public
+Also in this example, the optional "listing" attribute was set to false. If "listing" is set the true, users would be able to see a list of the contents contained in the directory.
+Change Password
+http://hostname:8619/ca/shaftrest/shaftusermgr/update?shaftpassword.new=lion&shaftuser=user1&shaftpassword=tiger
+The above example changes the password for user1 to lion.
+Delete User
+http://hostname:8619/ca/shaftrest/shaftusermgr/delete?shaftuser.eq=user1&shaftuser=caimitoadmin&shaftpassword=caimito
+The above example removes user1.
+Delete Directory Privilege
+http://hostname:8619/ca/shaftrest/pathprivileges/delete?shaftuser=caimitoadmin&shaftpassword=caimito&resourceuser.eq=user1&path.eq=dirpath1
+Here user1's privilege to dirpath1 was removed.
+Delete Public Paths
+http://hostname:8619/ca/shaftrest/publicpaths/delete?shaftuser=user1&shaftpassword=tiger&path.eq=dirpath1/public
+In the above example, world readable access to dirpath1/public, was removed.
+
+Mounting Caimito as a File System
+Windows
+Right Click "Computer"
+Click "Add a network location"
+Enter the appropriate Caimito URL and login credentials.
+Linux
+Download and install one of the packages at the following link:
+http://pkgs.repoforge.org/davfs2/
+Add Caimito access info like so
+echo "http://hostname:8619 caimitoadmin caimito" >> /etc/davfs2/secrets
+Create a directory to map the mounted file system
+mkdir /clouddrive
+Mount Caimito like so:
+mount -t davfs http://hostname:8619 /clouddrive
+Virtuozzo and OpenVZ
+Install fuse on the Host system like so:
+yum -y install fuse
+Then set the following for the VPS like so:
+vzctl set 227 --devnodes fuse:rw --save
+
+Web Interface
+COMING SOON!
+
+Community
+Contact: support(AT)ngasi.com
+>>>>>>> ea374546f5d7f32e981a6c3c23786426285d1110

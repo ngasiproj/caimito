@@ -32,7 +32,10 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ngasi.caimito.resource;
 import ngasi.caimito.*;
+<<<<<<< HEAD
 
+=======
+>>>>>>> ea374546f5d7f32e981a6c3c23786426285d1110
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -358,17 +361,65 @@ try{
 
 		Hashtable<String,String> h = new Hashtable<String,String>();
 		h.put("X-Auth-Token",X_Auth_Token);
+<<<<<<< HEAD
 
 
+=======
+		//("INIT 1 " + X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + CaimitoUtil.urlEncode(path) + "?format=json");
+
+		//String nv = null;
+		//try{
+>>>>>>> ea374546f5d7f32e981a6c3c23786426285d1110
 		String p2 = path;
 		if (p2.endsWith("/"))
 			p2 = p2.substring(0,p2.length() -1);
 		int nv = HttpClientUtil.trustHead(h,X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + CaimitoUtil.urlEncode(p2) + "?format=json");
 		if (nv == 404)return;
+<<<<<<< HEAD
+=======
+		/*}catch (Exception e){
+			try{
+			
+		nv = HttpClientUtil.trustGet(h,X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + CaimitoUtil.urlEncode(path + "/") + "?format=json");
+			}catch (Exception e2){
+				//("INIT 2 OPR.initerr " + e2.toString());
+				return;
+			}
+		isd = true;	
+			//("CLOUD STORE 2");
+		}*/
+		//(X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + path + "-->" + h + " THEY find file AUTHO2 " + nv);		 
+//			Last-Modified=Tue, 24 Apr 2012 00:05:15 GMT, Accept-Ranges=bytes, Content-Length=0, X-Trans-Id=txd7c65f16aa884af9a09266da2636daf5, Date=Tue, 24 Apr 2012 03:15:30 GMT, X-Auth-Token=AUTH_tke0c45f67d4fb47189ad41fc771b4b53f, Content-Type=application/x-www-form-urlencoded; charset=ISO-8859-1, Connection=keep-alive, Etag=d41d8cd98f00b204e9800998ecf8427e
+		//	nv = nv.substring(1,nv.length() - 1);
+	//("DEVALUE OF he2 " + nv);
+
+>>>>>>> ea374546f5d7f32e981a6c3c23786426285d1110
 
 
 	NameValuePairs nvp = new NameValuePairs(h);
 	
+<<<<<<< HEAD
+=======
+/*	if (StringUtil.isRealString(nv))
+	{
+		if (nv.equals("."))
+			isd = true;
+			else{
+			
+	Gson gson = new Gson();
+		OSRAttribute oa = 	gson.fromJson(nv, new TypeToken<OSRAttribute>() {}.getType());
+			cl = oa.bytes;
+			lm = oa.lastModified();
+			ex = true;
+			if (oa.content_type != null && oa.content_type.equals("application/directory"))
+				isd = true;
+
+			return;
+			}
+	}*/
+	
+		//(X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + path + "-->" + h + " THEY find file AUTHO3 " + nvp);		 
+>>>>>>> ea374546f5d7f32e981a6c3c23786426285d1110
 
 	cl = nvp.getLong("Content-Length");
 	lm =  dfm.parse(nvp.getString("Last-Modified")).getTime();
@@ -379,6 +430,7 @@ try{
 	ex = true;
 }catch (Throwable e){
 	e.printStackTrace();
+<<<<<<< HEAD
 	
 	if (CaimitoConfig.cacheable){
 		String tf = CaimitoConfig.cachedir + path;
@@ -395,6 +447,8 @@ try{
 	
 	
 	
+=======
+>>>>>>> ea374546f5d7f32e981a6c3c23786426285d1110
 }
 
 
@@ -455,6 +509,7 @@ try{
 	 protected static long authtime = 0;
 	 void auth()throws CaimitoException{
 		try{
+<<<<<<< HEAD
 			
 		if (X_Auth_Token != null && X_Storage_Url != null && !((System.currentTimeMillis() - authtime) > maxautint))return;
 		Hashtable<String,String> h = new Hashtable<String,String>();
@@ -484,6 +539,19 @@ try{
 		}
 		
 		
+=======
+		if (X_Auth_Token != null && X_Storage_Url != null && !((System.currentTimeMillis() - authtime) > maxautint))return;
+		Hashtable<String,String> h = new Hashtable<String,String>();
+		h.put("X-Auth-User",CaimitoConfig.getConfig().getString("cloud.username"));
+		h.put("X-Auth-Key",CaimitoConfig.getConfig().getString("cloud.api.key_password"));
+		String curl = CaimitoConfig.getConfig().getString("cloud.url");
+		if (curl.endsWith("/"))
+			curl = curl.substring(0,curl.length() - 1);
+		String nv = HttpClientUtil.trustGet(h,curl);
+			
+		X_Storage_Url = h.get("X-Storage-Url");
+		X_Auth_Token = h.get("X-Auth-Token");
+>>>>>>> ea374546f5d7f32e981a6c3c23786426285d1110
 		if (X_Storage_Url == null || X_Auth_Token == null){
 			 
 			if (!curl.endsWith("/tokens"))

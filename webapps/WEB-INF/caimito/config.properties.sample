@@ -1,7 +1,12 @@
+<<<<<<< HEAD
 #optional - 1.0,2.0
 #cloud.api.version=
 
 #file,openstack
+=======
+#file,openstack
+
+>>>>>>> ea374546f5d7f32e981a6c3c23786426285d1110
 resource=file
 #A Container or Bucket
 cloud.store=store1
