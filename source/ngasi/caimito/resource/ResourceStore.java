@@ -41,10 +41,7 @@ import tools.util.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
-<<<<<<< HEAD
 import java.io.BufferedInputStream;
-=======
->>>>>>> ea374546f5d7f32e981a6c3c23786426285d1110
 import java.io.UnsupportedEncodingException;
 import org.shaft.server.utils.*;
 import tools.util.*;
@@ -69,12 +66,8 @@ public class ResourceStore
 
 	    public static  ResourceObj lookup(String path, HttpServletRequest request)
         throws CaimitoException {
-<<<<<<< HEAD
         	//("GET Z PAth " + path);
 	    	String	u = (String)request.getAttribute(CaimitoConfig.caimitouserreqobj);
-=======
-        	String	u = (String)request.getAttribute(CaimitoConfig.caimitouserreqobj);
->>>>>>> ea374546f5d7f32e981a6c3c23786426285d1110
         	if (u == null)
         	u = login(request);
         	return lookup(path,u);
@@ -91,12 +84,8 @@ public class ResourceStore
 	    public static  boolean isPublicPath(String path,CaimitoBooleanHolder l,String u)
         throws CaimitoException {
         	try{
-<<<<<<< HEAD
         //("PUBLIC PATHS " + path);
         		if (path.startsWith("/" + CaimitoConfig.shaftapp + "/") || path.equals("/favicon.ico"))
-=======
-          	if (path.startsWith("/" + CaimitoConfig.shaftapp + "/") || path.equals("/favicon.ico"))
->>>>>>> ea374546f5d7f32e981a6c3c23786426285d1110
       			return true;
         	if (path.startsWith("/"))
         		path = path.substring(1,path.length());
@@ -251,12 +240,7 @@ sql = "SELECT * from " + CaimitoConfig.shaftapp + "_pathprivileges where resourc
                                  HttpServletResponse response,int action)
         throws CaimitoException {
         	String u = null;
-<<<<<<< HEAD
         	//("GET Z PAth  2 " + path);      	
-=======
-        	//ResourceObj ro = null;
-        	
->>>>>>> ea374546f5d7f32e981a6c3c23786426285d1110
         	if (path.equals("/") || path.equals(""))
         	{
         	if (CaimitoConfig.protectedRoot)
@@ -348,7 +332,6 @@ try{
         	ResourceObj ro = null;
 			//if (u == null)
 			//	Thread.dumpStack();
-<<<<<<< HEAD
         	//(u +  " ***************WOWWW SD 1 " + CaimitoConfig.resource + ":" + path);
         	if (path.startsWith("/" + CaimitoConfig.shaftapp + "/"))// || path.equals("/favicon.ico"))
         	{
@@ -357,13 +340,6 @@ try{
                		if (!path.startsWith("/" + CaimitoConfig.shaftapp + "/public/"))
                			path = "/" + CaimitoConfig.shaftapp + "/public/" + path.substring(CaimitoConfig.shaftapp.length() + 1,path.length());
                		//(" FAV NEW PATH " + path);
-=======
-        	//(u +  " WOWWW SD 1 " + CaimitoConfig.resource + ":" + path);
-        	if (path.startsWith("/" + CaimitoConfig.shaftapp + "/") || path.equals("/favicon.ico"))
-        	{
-               		if (!path.startsWith("/" + CaimitoConfig.shaftapp + "/public/"))
-               			path = "/" + CaimitoConfig.shaftapp + "/public/" + path.substring(CaimitoConfig.shaftapp.length() + 1,path.length());
->>>>>>> ea374546f5d7f32e981a6c3c23786426285d1110
                		ro = new ShaftResourceObj();
  		
         	}
@@ -382,7 +358,6 @@ try{
         		ro.path = path;
         		ro.listing = CaimitoConfig.getConfig().getBoolean("resource.dir.listing");
         	}
-<<<<<<< HEAD
         	
     		if (path.equals("/favicon.ico") && !ro.exists()){
     			path = "/" + CaimitoConfig.shaftapp + "/public/favicon.ico" ;
@@ -392,8 +367,6 @@ try{
     		}
         	
         	
-=======
->>>>>>> ea374546f5d7f32e981a6c3c23786426285d1110
         	return ro;
         }
      
@@ -498,7 +471,6 @@ String realm = (String)nvp.get("realm");
                                 )
         throws CaimitoException {
         	String ua = request.getHeader("user-agent");
-<<<<<<< HEAD
         	
         	/*java.util.Enumeration hs = request.getHeaderNames();
         	while (hs.hasMoreElements())
@@ -538,11 +510,6 @@ String realm = (String)nvp.get("realm");
         	//if (ua.equals("Microsoft Data Access Internet Publishing Provider DAV") || ua.indexOf("davfs2") > -1 || CaimitoConfig.getConfig().getString(ua + ".auth").equals("basic"))
         	//	return basicLogin(request,response);
         		System.out.println("USER AGAENT " + ua);*/
-=======
-        	//if (ua.equals("Microsoft Data Access Internet Publishing Provider DAV") || ua.indexOf("davfs2") > -1 || CaimitoConfig.getConfig().getString(ua + ".auth").equals("basic"))
-        	//	return basicLogin(request,response);
-        		//("USER AGAENT " + ua);
->>>>>>> ea374546f5d7f32e981a6c3c23786426285d1110
          		if (CaimitoConfig.getConfig().getString(ua + ".auth").equals("digest"))
          		return digestLogin(request,response);
        			return basicLogin(request,response);
@@ -553,12 +520,8 @@ String realm = (String)nvp.get("realm");
                                  HttpServletResponse response
                                 )
         throws CaimitoException {
-<<<<<<< HEAD
         		//("DIGEST LOGIN 1");
         	    	NameValuePairs nvp = new NameValuePairs();
-=======
-        							NameValuePairs nvp = new NameValuePairs();
->>>>>>> ea374546f5d7f32e981a6c3c23786426285d1110
         					String hr = request.getHeader("Authorization");
 					if (hr != null)
 					{
@@ -803,15 +766,10 @@ tid = Crypto.digest(tid,dig);
 			response.sendRedirect("https://" + request.getServerName()  + fau);
 				return;
 			}*/
-<<<<<<< HEAD
 			String rn = CaimitoConfig.SecurityRealmName;
 
 	    	//("BASIC ERROR SENT " + rn);
 				response.setHeader("Content-Type","text/html");
-=======
-				response.setHeader("Content-Type","text/html");
-				String rn = CaimitoConfig.SecurityRealmName;
->>>>>>> ea374546f5d7f32e981a6c3c23786426285d1110
 		    	response.setHeader("WWW-Authenticate","Basic realm=\"" + rn + "\"");
 				response.sendError(401);
 	    }

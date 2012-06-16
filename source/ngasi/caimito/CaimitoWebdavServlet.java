@@ -3125,11 +3125,7 @@ resp.getWriter().print(propr);
             context = theContext;
         }
 
-<<<<<<< HEAD
         //@Override
-=======
-        @Override
->>>>>>> ea374546f5d7f32e981a6c3c23786426285d1110
         public InputSource resolveEntity (String publicId, String systemId) {
             context.log("webdavservlet.enternalEntityIgnored");
             return new InputSource(
