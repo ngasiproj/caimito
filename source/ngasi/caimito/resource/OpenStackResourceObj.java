@@ -457,16 +457,22 @@ try{
 		try{
 			
 		if (X_Auth_Token != null && X_Storage_Url != null && !((System.currentTimeMillis() - authtime) > maxautint))return;
+		X_Auth_Token = null;
+		X_Storage_Url = null;
 		Hashtable<String,String> h = new Hashtable<String,String>();
-		String curl = null;
+		//String curl = null;
 		String nv = null;
+		String curl  = CaimitoConfig.getConfig().getString("cloud.url");
+		if (curl.endsWith("/"))
+			curl = curl.substring(0,curl.length() - 1);
+
 		if (CaimitoConfig.getConfig().get("cloud.api.version") == null || CaimitoConfig.getConfig().getString("cloud.api.version").startsWith("1."))
 		try{
 		h.put("X-Auth-User",CaimitoConfig.getConfig().getString("cloud.username"));
 		h.put("X-Auth-Key",CaimitoConfig.getConfig().getString("cloud.api.key_password"));
-		curl = CaimitoConfig.getConfig().getString("cloud.url");
-		if (curl.endsWith("/"))
-			curl = curl.substring(0,curl.length() - 1);
+		//curl = CaimitoConfig.getConfig().getString("cloud.url");
+		//if (curl.endsWith("/"))
+		//	curl = curl.substring(0,curl.length() - 1);
 		nv = HttpClientUtil.trustGet(h,curl);
 			
 		X_Storage_Url = h.get("X-Storage-Url");
