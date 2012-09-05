@@ -96,7 +96,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.apache.catalina.servlets.*;
 import ngasi.caimito.resource.*;
-
+import org.apache.catalina.comet.*;
 
 
 /**
@@ -163,7 +163,7 @@ import ngasi.caimito.resource.*;
  */
 
 public class CaimitoWebdavServlet
-    extends CaimitoDefaultServlet {
+    extends CaimitoDefaultServlet implements org.apache.catalina.comet.CometProcessor{
 
     private static final long serialVersionUID = 1L;
 
@@ -342,6 +342,35 @@ public class CaimitoWebdavServlet
 
     }
 
+    
+    
+    public void event(CometEvent event)
+    throws IOException, ServletException {
+    HttpServletRequest request = event.getHttpServletRequest();
+    HttpServletResponse response = event.getHttpServletResponse();
+    if (event.getEventType() == CometEvent.EventType.BEGIN) {
+
+//System.out.println("BEGIN ");
+service(request,response);
+event.close();
+    } else if (event.getEventType() == CometEvent.EventType.ERROR) {
+    	System.out.println("COM ERROR ");
+
+        event.close();
+    } else if (event.getEventType() == CometEvent.EventType.END) {
+
+       	System.out.println("COM END ");
+
+      //  service(request,response);
+
+        event.close();
+    } else if (event.getEventType() == CometEvent.EventType.READ) {
+
+    	System.out.println("COM READ ");
+    }
+}
+    
+    
 
     // ------------------------------------------------------ Protected Methods
 
@@ -3125,7 +3154,7 @@ resp.getWriter().print(propr);
             context = theContext;
         }
 
-        @Override
+        //@Override
         public InputSource resolveEntity (String publicId, String systemId) {
             context.log("webdavservlet.enternalEntityIgnored");
             return new InputSource(

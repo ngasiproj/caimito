@@ -55,4 +55,11 @@ public class ShaftResourceObj extends FileResourceObj
     	 protected String getHome(){
     		return CaimitoConfig.caimitoroot;
     	}
+    	 
+ 		public String getPath(){
+			//if (path.indexOf("/public/") < 0){
+			///	
+			//}
+ 			return path;
+		}
 }

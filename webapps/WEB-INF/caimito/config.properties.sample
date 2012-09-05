@@ -1,5 +1,12 @@
-#file,openstack
+#cloud_accounts_for_administration_only
+cloud.setup=single_cloud_account_with_single_storage
+#minutes
+request.timeout=130
+#optional - 1.0,2.0
+#cloud.api.version=
 
+
+#file,openstack
 resource=file
 #A Container or Bucket
 cloud.store=store1

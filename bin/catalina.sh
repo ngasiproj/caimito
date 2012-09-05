@@ -129,6 +129,15 @@ PRGDIR=`dirname "$PRG"`
 # Copy CATALINA_BASE from CATALINA_HOME if not already set
 [ -z "$CATALINA_BASE" ] && CATALINA_BASE="$CATALINA_HOME"
 
+
+rm -f -R $CATALINA_HOME/logs/*
+rm -f -R $CATALINA_HOME/work/Catalina/localhost
+rm -f -R  $CATALINA_HOME/temp
+mkdir -p $CATALINA_HOME/work/Catalina/localhost
+mkdir -p $CATALINA_HOME/temp
+
+
+
 # Ensure that any user defined CLASSPATH variables are not used on startup,
 # but allow them to be specified in setenv.sh, in rare case when it is needed.
 CLASSPATH=

@@ -64,6 +64,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Enumeration;
 
@@ -101,6 +102,11 @@ import org.apache.naming.resources.Resource;
 import org.apache.naming.resources.ResourceAttributes;
 //import org.apache.tomcat.util.res.StringManager;
 import org.apache.catalina.servlets.*;
+import org.shaft.server.utils.ShaftRestConfig;
+import org.shaft.utils.ShaftConfig;
+
+import tools.util.StreamUtil;
+
 import ngasi.caimito.resource.*;
 
 /**
@@ -250,6 +256,7 @@ public class CaimitoDefaultServlet
     /**
      * GMT timezone - all HTTP dates are on GMT
      */
+    static List<Integer> pge = new ArrayList<Integer>();
     static {
         urlEncoder = new URLEncoder();
         urlEncoder.addSafeCharacter('-');
@@ -257,6 +264,10 @@ public class CaimitoDefaultServlet
         urlEncoder.addSafeCharacter('.');
         urlEncoder.addSafeCharacter('*');
         urlEncoder.addSafeCharacter('/');
+        pge.add(401);
+        pge.add(403);
+        pge.add(404);
+        pge.add(500);
     }
 
 
@@ -361,6 +372,51 @@ public class CaimitoDefaultServlet
         }
 
     }
+    
+
+    
+    public static void renderError(HttpServletRequest req,HttpServletResponse resp1,int c){
+    	try{
+    	//if (!req.isAsyncStarted())
+    		if (true)
+    	{
+    		
+    		//String route = "/" + ShaftConfig.shaftapps + "/" + app + "/public/jamun.html" ;
+        	if (pge.contains(c))
+        	{
+
+        		
+        		resp1.setStatus(c);
+        		resp1.setContentType("text/html" );
+        		ResourceObj ro =  ResourceStore.lookup("/" + CaimitoConfig.shaftapp + "/public/" + c + ".html","guest");
+        		resp1.setContentLength((int)ro.getContentLength() );
+        		StreamUtil.copy(ro.getInputStream(), resp1.getOutputStream());
+        		return;
+        	}
+    		resp1.sendError(c);
+    	//  	response.setContentType("text/html" );
+    	//	req.getAsyncContext().dispatch("/" + CaimitoConfig.getConfig().getString("shaft.app") + "/" + c + ".html");  	
+
+    		return;
+    	}
+    	HttpServletResponse response = (HttpServletResponse)req.getAsyncContext().getResponse();
+    	response.setStatus( c );
+	
+    	if (!pge.contains(c))
+    	{
+
+
+    		response.flushBuffer();
+
+    		return;
+    	}
+    	
+    	response.setContentType("text/html" );
+		req.getAsyncContext().dispatch("/" + CaimitoConfig.shaftapp + "/" + c + ".html");  	
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+    	}
 
 	protected String smgetString(String msg,HttpServletRequest request){
 		return smgetString(msg,null,request);
@@ -579,7 +635,8 @@ public class CaimitoDefaultServlet
 		ResourceObj ro = ResourceStore.lookup(path,req,resp,ResourceStore.WRITE);
  		if (ro == null)return;
         if (ro == null) {
-            resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+            //resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+        	renderError(req,resp,HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
@@ -728,8 +785,9 @@ public class CaimitoDefaultServlet
  		if (ro == null)return;
 
         if (!ro.canWrite()) {
-            resp.sendError(HttpServletResponse.SC_FORBIDDEN);
-            return;
+            //resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+        	renderError(req,resp,HttpServletResponse.SC_FORBIDDEN);
+        	return;
         }
 
         boolean exists = ro.exists();
@@ -751,10 +809,12 @@ public class CaimitoDefaultServlet
             if (result) {
                 resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
-                resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+      //          resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            	renderError(req,resp,HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             }
         } else {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            //resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+        	renderError(req,resp,HttpServletResponse.SC_NOT_FOUND);
         }
 
     }
@@ -831,11 +891,12 @@ public class CaimitoDefaultServlet
         String path = getRelativePath(request);
 		ResourceObj ro = ResourceStore.lookup(path,request,response,ResourceStore.READ);
 		
+		
 		if (ro == null)return;
-  
           if (!ro.canRead()) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
-            return;
+            //response.sendError(HttpServletResponse.SC_FORBIDDEN);
+             	renderError(request,response,HttpServletResponse.SC_FORBIDDEN);
+        	  return;
         }
   
         if (debug > 0) {
@@ -863,8 +924,10 @@ public class CaimitoDefaultServlet
                         "defaultServlet.missingResource");
             }
 
-            response.sendError(HttpServletResponse.SC_NOT_FOUND,
-                               requestUri);
+    //        response.sendError(HttpServletResponse.SC_NOT_FOUND,
+     //                          requestUri);
+        	renderError(request,response,HttpServletResponse.SC_NOT_FOUND);
+        	 
             return;
         }
 
@@ -879,8 +942,10 @@ public class CaimitoDefaultServlet
                 if (requestUri == null) {
                     requestUri = request.getRequestURI();
                 }
-                response.sendError(HttpServletResponse.SC_NOT_FOUND,
-                                   requestUri);
+               // response.sendError(HttpServletResponse.SC_NOT_FOUND,
+              //                     requestUri);
+               	renderError(request,response,HttpServletResponse.SC_NOT_FOUND);
+
                 return;
             }
         }
@@ -888,7 +953,8 @@ public class CaimitoDefaultServlet
         boolean isError =
             response.getStatus() >= HttpServletResponse.SC_BAD_REQUEST;
 
-        // Check if the conditions specified in the optional If headers are
+    		 
+            // Check if the conditions specified in the optional If headers are
         // satisfied.
        if (!ro.isDirectory()) {
 
@@ -917,9 +983,11 @@ public class CaimitoDefaultServlet
             // Skip directory listings if we have been configured to
             // suppress them
             if (!ro.listings()) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND,
-                                   request.getRequestURI());
-                return;
+    //            response.sendError(HttpServletResponse.SC_NOT_FOUND,
+    //                               request.getRequestURI());
+               	renderError(request,response,HttpServletResponse.SC_NOT_FOUND);
+
+            	return;
             }
             contentType = "text/html;charset=UTF-8";
 
@@ -951,8 +1019,7 @@ public class CaimitoDefaultServlet
             }
 
         }
-//(contentType + " serveContent " + serveContent);
-        ServletOutputStream ostream = null;
+       ServletOutputStream ostream = null;
         PrintWriter writer = null;
 
         if (serveContent) {
@@ -1144,8 +1211,10 @@ public class CaimitoDefaultServlet
 
         // bytes is the only range unit supported
         if (!rangeHeader.startsWith("bytes")) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            return null;
+ //           response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+           	renderError(request,response,HttpServletResponse.SC_BAD_REQUEST);
+
+        	return null;
         }
 
         rangeHeader = rangeHeader.substring(6).trim();
@@ -1154,13 +1223,17 @@ public class CaimitoDefaultServlet
         int slashPos = rangeHeader.indexOf('/');
 
         if (dashPos == -1) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            return null;
+     //       response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+           	renderError(request,response,HttpServletResponse.SC_BAD_REQUEST);
+
+        	return null;
         }
 
         if (slashPos == -1) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            return null;
+      //      response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+           	renderError(request,response,HttpServletResponse.SC_BAD_REQUEST);
+
+        	return null;
         }
 
         Range range = new Range();
@@ -1172,13 +1245,17 @@ public class CaimitoDefaultServlet
             range.length = Long.parseLong
                 (rangeHeader.substring(slashPos + 1, rangeHeader.length()));
         } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            return null;
+    //        response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+           	renderError(request,response,HttpServletResponse.SC_BAD_REQUEST);
+
+        	return null;
         }
 
         if (!range.validate()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            return null;
+    //        response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+           	renderError(request,response,HttpServletResponse.SC_BAD_REQUEST);
+
+        	return null;
         }
 
         return range;
@@ -1245,8 +1322,10 @@ public class CaimitoDefaultServlet
         // of adding new ones).
         if (!rangeHeader.startsWith("bytes")) {
             response.addHeader("Content-Range", "bytes */" + fileLength);
-            response.sendError
-                (HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+      //      response.sendError
+    //            (HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+           	renderError(request,response,HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+
             return null;
         }
 
@@ -1268,8 +1347,10 @@ public class CaimitoDefaultServlet
 
             if (dashPos == -1) {
                 response.addHeader("Content-Range", "bytes */" + fileLength);
-                response.sendError
-                    (HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+          //      response.sendError
+        //            (HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+              	renderError(request,response,HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+
                 return null;
             }
 
@@ -1282,9 +1363,11 @@ public class CaimitoDefaultServlet
                 } catch (NumberFormatException e) {
                     response.addHeader("Content-Range",
                                        "bytes */" + fileLength);
-                    response.sendError
-                        (HttpServletResponse
-                         .SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+                  //  response.sendError
+                  //      (HttpServletResponse
+                   //      .SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+                  	renderError(request,response,HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+
                     return null;
                 }
 
@@ -1302,9 +1385,11 @@ public class CaimitoDefaultServlet
                 } catch (NumberFormatException e) {
                     response.addHeader("Content-Range",
                                        "bytes */" + fileLength);
-                    response.sendError
-                        (HttpServletResponse
-                         .SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+        //            response.sendError
+        //                (HttpServletResponse
+        //                 .SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+                  	renderError(request,response,HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+
                     return null;
                 }
 
@@ -1312,8 +1397,10 @@ public class CaimitoDefaultServlet
 
             if (!currentRange.validate()) {
                 response.addHeader("Content-Range", "bytes */" + fileLength);
-                response.sendError
-                    (HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+         //       response.sendError
+          //          (HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+              	renderError(request,response,HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+
                 return null;
             }
 
@@ -1331,13 +1418,16 @@ public class CaimitoDefaultServlet
     protected InputStream render(String contextPath, ResourceObj cacheEntry,HttpServletRequest request)
         throws IOException, ServletException {
 
+
+    	
+    	
         //InputStream xsltInputStream =
          //   findXsltInputStream(cacheEntry.context);
 
         //if (xsltInputStream==null) {
-            return renderHtml(contextPath, cacheEntry,request);
+           return renderHtml(contextPath, cacheEntry,request);
         //}
-        //return renderXml(contextPath, cacheEntry, xsltInputStream);
+        //return renderXml(contextPath, cacheEntry, null);
 
     }
 
@@ -1442,6 +1532,8 @@ public class CaimitoDefaultServlet
 
 
         try {
+        	if (xsltInputStream == null)
+        		return (new ByteArrayInputStream(sb.toString().getBytes()));
             TransformerFactory tFactory = TransformerFactory.newInstance();
             Source xmlSource = new StreamSource(new StringReader(sb.toString()));
             Source xslSource = new StreamSource(xsltInputStream);
@@ -1469,7 +1561,7 @@ public class CaimitoDefaultServlet
         throws IOException, ServletException {
 
         String name = ro.path;
-
+  
         // Prepare a writer to a buffered area
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         OutputStreamWriter osWriter = new OutputStreamWriter(stream, "UTF8");
@@ -1784,9 +1876,11 @@ public class CaimitoDefaultServlet
                 // If none of the given ETags match, 412 Precodition failed is
                 // sent back
                 if (!conditionSatisfied) {
-                    response.sendError
-                        (HttpServletResponse.SC_PRECONDITION_FAILED);
-                    return false;
+           //         response.sendError
+           //             (HttpServletResponse.SC_PRECONDITION_FAILED);
+                  	renderError(request,response,HttpServletResponse.SC_PRECONDITION_FAILED);
+
+                	return false;
                 }
 
             }
@@ -1883,7 +1977,8 @@ public class CaimitoDefaultServlet
 
                     return false;
                 }
-                response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+    //            response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+             	renderError(request,response,HttpServletResponse.SC_PRECONDITION_FAILED);
                 return false;
             }
         }
@@ -1913,8 +2008,9 @@ public class CaimitoDefaultServlet
                 if ( lastModified >= (headerValue + 1000)) {
                     // The entity has not been modified since the date
                     // specified by the client. This is not an error case.
-                    response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
-                    return false;
+   //                 response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+                 	renderError(request,response,HttpServletResponse.SC_PRECONDITION_FAILED);
+                	return false;
                 }
             }
         } catch(Exception illegalArgument) {
@@ -1942,7 +2038,6 @@ public class CaimitoDefaultServlet
 
         IOException exception = null;
         InputStream resourceInputStream = null;
-
         // Optimization: If the binary content has already been loaded, send
         // it directly
         //("cacheEntry.resource 1 " + cacheEntry);
@@ -2034,7 +2129,6 @@ public class CaimitoDefaultServlet
         throws CaimitoException,IOException {
 
         IOException exception = null;
-
         InputStream resourceInputStream = cacheEntry.getInputStream();
         InputStream istream =
             new BufferedInputStream(resourceInputStream, input);
@@ -2066,7 +2160,6 @@ public class CaimitoDefaultServlet
         throws CaimitoException,IOException {
 
         IOException exception = null;
-
         while ( (exception == null) && (ranges.hasNext()) ) {
 
             InputStream resourceInputStream = cacheEntry.getInputStream();

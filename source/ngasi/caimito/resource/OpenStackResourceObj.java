@@ -32,6 +32,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ngasi.caimito.resource;
 import ngasi.caimito.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -45,12 +46,15 @@ import java.lang.reflect.*;
 import com.google.gson.reflect.*;
 import java.util.List;
 import java.text.*;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Map;
 import java.io.ByteArrayInputStream;
 import java.util.Iterator;
+
+import org.shaft.server.auth.UserMgr;
 
 public class OpenStackResourceObj extends CloudResourceObj
     {
@@ -82,10 +86,10 @@ public class OpenStackResourceObj extends CloudResourceObj
     		try{
     		auth();
     		Hashtable<String,String> h = new Hashtable<String,String>();
-		h.put("X-Auth-Token",X_Auth_Token);
+		h.put("X-Auth-Token",X_Auth_Token());
 	
 		
-		HttpClientUtil.trustGetToFile(h,X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + CaimitoUtil.urlEncode(path),tf);
+		 HttpClientUtil.trustGetToFile(h,X_Storage_Url() + getRootPath() + CaimitoUtil.urlEncode(path),tf);
     		}catch (Exception e){
     			e.printStackTrace();
    			CaimitoException.throwException(e);
@@ -96,12 +100,17 @@ public class OpenStackResourceObj extends CloudResourceObj
 
 
 		public void doWrite(InputStream dest)throws CaimitoException{
-		try{
+			String line = getRootPath() + CaimitoUtil.urlEncode(path);
+			if(line.length() - line.replace("/", "").length() < 2)
+				CaimitoException.throwException("invalid_path");
+			//if ((getRootPath() + CaimitoUtil.urlEncode(path)).count)
+			try{
+
 			if (dest.available() < 0)return;
 
 
 		Hashtable<String,String> h = new Hashtable<String,String>();
-		h.put("X-Auth-Token",X_Auth_Token);
+		h.put("X-Auth-Token",X_Auth_Token());
 		if (contentType != null)
 		h.put("Content-Type",contentType);
 			
@@ -112,7 +121,7 @@ public class OpenStackResourceObj extends CloudResourceObj
 		String nv = null;
 	
 		
-		nv = HttpClientUtil.trustPut(h,X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + CaimitoUtil.urlEncode(path),dest);
+		nv = HttpClientUtil.trustPut(h,X_Storage_Url() + line,dest);
 		//(path + " put me " + nv);
 
 		 		}catch (Exception e){
@@ -142,7 +151,7 @@ public void doCopy(ResourceObj dest)throws CaimitoException
 					auth();
 
 		Hashtable<String,String> h = new Hashtable<String,String>();
-		h.put("X-Auth-Token",X_Auth_Token);
+		h.put("X-Auth-Token",X_Auth_Token());
 		if (isDirectory())
 		h.put("Content-Type","application/directory");
 		//h.put("Content-Length","0");
@@ -150,14 +159,13 @@ public void doCopy(ResourceObj dest)throws CaimitoException
 		String tp = path;
 		if (tp.endsWith("/"))
 			tp = tp.substring(0,tp.length() -1);
-		h.put("X_COPY_FROM",CaimitoConfig.getConfig().getString("cloud.store") + tp);
+		h.put("X_COPY_FROM",getAbsoluteRootPath() + tp);
 		String tp2 = dest.path;
 		if (tp2.endsWith("/"))
 			tp2 = tp2.substring(0,tp2.length() -1);
 try{
 
-		String nv = HttpClientUtil.trustPut(h,X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + tp2);
-		//(X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + tp + "-->" + h + " ******************X_COPY_FROM 1111 " + nv + ":" + tp2);		 
+		String nv = HttpClientUtil.trustPut(h,X_Storage_Url() + getRootPath()+ tp2);
 		}catch (Exception e){
     			e.printStackTrace();
    			CaimitoException.throwException(e);
@@ -212,7 +220,7 @@ try{
 		auth();
 
 		Hashtable<String,String> h = new Hashtable<String,String>();
-		h.put("X-Auth-Token",X_Auth_Token);
+		h.put("X-Auth-Token",X_Auth_Token());
 		if (isDirectory())
 		h.put("Content-Type","application/directory");
 		//h.put("Content-Length","0");
@@ -220,13 +228,13 @@ try{
 		String tp = path;
 		if (tp.endsWith("/"))
 			tp = tp.substring(0,tp.length() -1);
-		h.put("X_COPY_FROM",CaimitoConfig.getConfig().getString("cloud.store") + tp);
+		h.put("X_COPY_FROM",getAbsoluteRootPath() + tp);
 		String tp2 = dest.path;
 		if (tp2.endsWith("/"))
 			tp2 = tp2.substring(0,tp2.length() -1);
 
-		String nv = HttpClientUtil.trustPut(h,X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + tp2);
-		//(X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + tp + "-->" + h + " ******************X_COPY_FROM " + nv + ":" + tp2);		 
+		String nv = HttpClientUtil.trustPut(h,X_Storage_Url() +getRootPath() + tp2);
+		//(X_Storage_Url + "/" + CaimitoConfig.getConfig().getString(") + tp + "-->" + h + " ******************X_COPY_FROM " + nv + ":" + tp2);		 
 
 
 
@@ -310,15 +318,15 @@ try{
 
 
 		Hashtable<String,String> h = new Hashtable<String,String>();
-		h.put("X-Auth-Token",X_Auth_Token);
-		//( "DEO DELOET " + X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + CaimitoUtil.urlEncode(path) + "?format=json");
+		h.put("X-Auth-Token",X_Auth_Token());
+		//( "DEO DELOET " + X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cl") + CaimitoUtil.urlEncode(path) + "?format=json");
 
 		String nv = null;
 			String p2 = path;
 		if (p2.endsWith("/"))
 			p2 = p2.substring(0,p2.length() -1);
 	
-		nv = HttpClientUtil.trustDelete(h,X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + CaimitoUtil.urlEncode(p2) );
+		nv = HttpClientUtil.trustDelete(h,X_Storage_Url() + getRootPath() + CaimitoUtil.urlEncode(p2) );
 
 
 	//("DELETE OF he2 " + nv);
@@ -347,7 +355,12 @@ try{
 	}
 	
 	protected void init(){
-		if (init)return;
+		//(path + " is init 1 " + init + ":" + isd + ":" + cl);
+		if (init){
+		//Thread.dumpStack();
+		return;
+		}
+	
 try{
 				init = true;
 	if (path.equals("") || path.equals("/"))
@@ -356,65 +369,62 @@ try{
 			auth();
 
 		Hashtable<String,String> h = new Hashtable<String,String>();
-		h.put("X-Auth-Token",X_Auth_Token);
-		//("INIT 1 " + X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + CaimitoUtil.urlEncode(path) + "?format=json");
+		h.put("X-Auth-Token",X_Auth_Token());
 
-		//String nv = null;
-		//try{
+
 		String p2 = path;
 		if (p2.endsWith("/"))
 			p2 = p2.substring(0,p2.length() -1);
-		int nv = HttpClientUtil.trustHead(h,X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + CaimitoUtil.urlEncode(p2) + "?format=json");
-		if (nv == 404)return;
-		/*}catch (Exception e){
-			try{
-			
-		nv = HttpClientUtil.trustGet(h,X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + CaimitoUtil.urlEncode(path + "/") + "?format=json");
-			}catch (Exception e2){
-				//("INIT 2 OPR.initerr " + e2.toString());
-				return;
-			}
-		isd = true;	
-			//("CLOUD STORE 2");
-		}*/
-		//(X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + path + "-->" + h + " THEY find file AUTHO2 " + nv);		 
-//			Last-Modified=Tue, 24 Apr 2012 00:05:15 GMT, Accept-Ranges=bytes, Content-Length=0, X-Trans-Id=txd7c65f16aa884af9a09266da2636daf5, Date=Tue, 24 Apr 2012 03:15:30 GMT, X-Auth-Token=AUTH_tke0c45f67d4fb47189ad41fc771b4b53f, Content-Type=application/x-www-form-urlencoded; charset=ISO-8859-1, Connection=keep-alive, Etag=d41d8cd98f00b204e9800998ecf8427e
-		//	nv = nv.substring(1,nv.length() - 1);
-	//("DEVALUE OF he2 " + nv);
+		int nv = HttpClientUtil.trustHead(h,X_Storage_Url() + getRootPath() + CaimitoUtil.urlEncode(p2) + "?format=json");
+		//(path + " is init 2 " + nv + ":" + X_Storage_Url() + getRootPath() + CaimitoUtil.urlEncode(p2) + ":" + store);
 
+		if (nv == 404){
+			
+			return;
+		}
 
 
 	NameValuePairs nvp = new NameValuePairs(h);
+	//(p2 + " ZEE ROOT " + nvp + ":" + X_Storage_Url() + getRootPath() + CaimitoUtil.urlEncode(p2));
 	
-/*	if (StringUtil.isRealString(nv))
+	if (p2.length() > 1 && p2.lastIndexOf("/") < 1 && CaimitoConfig.cloud_setup==CaimitoConfig.cloud_accounts_for_administration_only){
+		cl = 0;
+		lm =  dfm.parse(nvp.getString("Date")).getTime();
+		isd = true;	
+		
+	}
+	else
 	{
-		if (nv.equals("."))
-			isd = true;
-			else{
-			
-	Gson gson = new Gson();
-		OSRAttribute oa = 	gson.fromJson(nv, new TypeToken<OSRAttribute>() {}.getType());
-			cl = oa.bytes;
-			lm = oa.lastModified();
-			ex = true;
-			if (oa.content_type != null && oa.content_type.equals("application/directory"))
-				isd = true;
-
-			return;
-			}
-	}*/
-	
-		//(X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + path + "-->" + h + " THEY find file AUTHO3 " + nvp);		 
 
 	cl = nvp.getLong("Content-Length");
 	lm =  dfm.parse(nvp.getString("Last-Modified")).getTime();
 			if (nvp.getString("Content-Type").equals("application/directory"))
 				isd = true;
+	}
+	if (isd && !path.endsWith("/"))
+		path = path + "/";
 
+	//(isd + ":CODET " + path + ":" + cl + ":" + lm);
 	//init = true;
 	ex = true;
 }catch (Throwable e){
 	e.printStackTrace();
+	
+	if (CaimitoConfig.cacheable){
+		String tf = CaimitoConfig.cachedir + path;
+		File ftf = new File(tf);
+	
+		if (ftf.exists())
+		{
+			cl = ftf.length();
+			lm =  ftf.lastModified();
+					if (ftf.isDirectory())
+						isd = true;
+		}
+	}
+	
+	
+	
 }
 
 
@@ -437,14 +447,14 @@ try{
 		auth();
 
 		Hashtable<String,String> h = new Hashtable<String,String>();
-		h.put("X-Auth-Token",X_Auth_Token);
+		h.put("X-Auth-Token",X_Auth_Token());
 		h.put("Content-Type","application/directory");
 		String tp = path;
 		if (tp.endsWith("/"))
 			//tp = tp + "/";
 			tp = tp.substring(0,tp.length() -1);
-		String nv = HttpClientUtil.trustPut(h,X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + tp);
-		//(X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + tp + "-->" + h + " THEY AUTHOiniyt " + nv);		 
+		String nv = HttpClientUtil.trustPut(h,X_Storage_Url() + getRootPath() + tp);
+		//(X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("") + tp + "-->" + h + " THEY AUTHOiniyt " + nv);		 
 		
 		
 		}catch (Exception e){
@@ -470,34 +480,187 @@ try{
 	return cl;
 	}
 	
-	 protected static String X_Auth_Token = null; //"5bba5c21-3c8c-4f6b-8b17-9adb7c2ad4ea";
-	 protected static String X_Storage_Url = null; //"http://swift.rc.nectar.org.au:8888/v1/AUTH_793";
-	 protected static long authtime = 0;
+	 //protected static String X_Auth_Token = null; //"5bba5c21-3c8c-4f6b-8b17-9adb7c2ad4ea";
+	 //protected static String X_Storage_Url = null; //"http://swift.rc.nectar.org.au:8888/v1/AUTH_793";
+	 //protected static long authtime = 0;
+	
+	protected static HashMap<String,HashMap> authM = new HashMap<String,HashMap>();
+	
 	 void auth()throws CaimitoException{
+		 String u = null;
+		 String p = null;
+		 if (CaimitoConfig.cloud_setup==CaimitoConfig.cloud_accounts_for_administration_only){
+			 u = user;
+			 try {
+				p = UserMgr.getUserMgr(CaimitoConfig.shaftapp).getPasswd(CaimitoConfig.shaftapp,user);
+			if (p == null)
+			{
+				CaimitoException.throwException("invalid_user");
+			}
+			 } catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				CaimitoException.throwException(e);
+			}
+		 }
+		 else{
+			 u = CaimitoConfig.getConfig().getString("cloud.username");
+			 p = CaimitoConfig.getConfig().getString("cloud.api.key_password");
+		 }
+		 auth(u,p);
+			 
+	 }
+	 
+	 String getCloudUser()throws CaimitoException{
+		 String u = null;
+
+		 if (CaimitoConfig.cloud_setup==CaimitoConfig.cloud_accounts_for_administration_only){
+			 u = user;
+
+		 }
+		 else{
+			 u = CaimitoConfig.getConfig().getString("cloud.username");
+			
+		 }
+		 return u;
+			 
+	 }
+	 
+	 String X_Auth_Token()throws CaimitoException{
+		 HashMap uAuthM = authM.get(getCloudUser());
+			return (String)uAuthM.get("X_Auth_Token");
+		 }
+
+	 String X_Storage_Url()throws CaimitoException{
+		 HashMap uAuthM = authM.get(getCloudUser());
+			return (String)uAuthM.get("X_Storage_Url");
+		 }
+	 
+	 
+	 static Map<String,String> authv2(String u,String p,String curl,boolean gtn)throws Exception{
+		 
+			HashMap<String,String> pc = new HashMap<String,String>();
+			//	Hashtable<String,Hashtable<String,String>> auh = new Hashtable<String,Hashtable<String,String>>();
+				HashMap auh = new HashMap();
+
+				if (!gtn)
+					pc.put("username",u);
+				else{
+					String[] toku = u.split(":");	
+					pc.put("username",toku[1]);
+					auh.put("tenantName",toku[0]);
+				}
+				pc.put("password",p);
+			
+				//Hashtable<String,Hashtable<String,String>> auh = new Hashtable<String,Hashtable<String,String>>();
+				auh.put("passwordCredentials",pc);
+			
+				HashMap tl = new HashMap();
+				tl.put("auth",auh);
+				
+				Hashtable h = new Hashtable<String,String>();
+				h.put("Content-type","application/json");
+
+				Gson gson = new Gson();
+				String json = gson.toJson(tl);
+				
+				//(" JZ " + json);
+				
+				ByteArrayInputStream dest = new ByteArrayInputStream(json.getBytes());
+
+				String nv = HttpClientUtil.trustPost(h,curl,dest);
+				//Gson gson = new Gson();
+				OSV2TokenResponse oa = 	gson.fromJson(nv, new TypeToken<OSV2TokenResponse>() {}.getType());
+				Map<String,String> eps = oa.getResponse();
+				String X_Storage_Url = null;
+				if (CaimitoConfig.getConfig().getString("cloud.endpoint.access").equals("internal"))
+				X_Storage_Url = eps.get("internalURL");
+				else
+					X_Storage_Url = eps.get("publicURL");	
+				String X_Auth_Token = oa.access.token.id;
+				if (X_Storage_Url == null || X_Auth_Token == null)
+				CaimitoException.throwException("unable_to_auth");
+				eps.put("X_Storage_Url",X_Storage_Url);
+				eps.put("X_Auth_Token",X_Auth_Token);
+				return eps;
+	 }
+	 
+	 
+	 public static void auth(String u,String p)throws CaimitoException{
 		try{
+	
+			String X_Auth_Token = null;
+			String X_Storage_Url = null; 
+			long authtime = 0;
+			HashMap uAuthM = authM.get(u);
+			if (uAuthM != null){
+				X_Auth_Token = (String)uAuthM.get("X_Auth_Token");
+				X_Storage_Url = (String)uAuthM.get("X_Storage_Url");
+				authtime = (Long)uAuthM.get("authtime");
+			}
+			
 		if (X_Auth_Token != null && X_Storage_Url != null && !((System.currentTimeMillis() - authtime) > maxautint))return;
+		X_Auth_Token = null;
+		X_Storage_Url = null;
 		Hashtable<String,String> h = new Hashtable<String,String>();
-		h.put("X-Auth-User",CaimitoConfig.getConfig().getString("cloud.username"));
-		h.put("X-Auth-Key",CaimitoConfig.getConfig().getString("cloud.api.key_password"));
-		String curl = CaimitoConfig.getConfig().getString("cloud.url");
+		//String curl = null;
+		String nv = null;
+		String curl  = CaimitoConfig.getConfig().getString("cloud.url");
 		if (curl.endsWith("/"))
 			curl = curl.substring(0,curl.length() - 1);
-		String nv = HttpClientUtil.trustGet(h,curl);
+
+		if (CaimitoConfig.getConfig().get("cloud.api.version") == null || CaimitoConfig.getConfig().getString("cloud.api.version").startsWith("1."))
+		try{
+		h.put("X-Auth-User",u);
+		h.put("X-Auth-Key",p);
+		//curl = CaimitoConfig.getConfig().getString("cloud.url");
+		//if (curl.endsWith("/"))
+		//	curl = curl.substring(0,curl.length() - 1);
+		
+		//(curl + " JZa  " + h);
+		//( " TWICE THE CHARM " + u + ":" + p);
+		
+		nv = HttpClientUtil.trustGet(h,curl);
 			
 		X_Storage_Url = h.get("X-Storage-Url");
 		X_Auth_Token = h.get("X-Auth-Token");
+		}catch (Exception e){
+			System.out.println(" Failed V1 Auth " + e.toString());
+			e.printStackTrace();
+			if (CaimitoConfig.getConfig().getString("cloud.api.version").startsWith("1."))
+			{
+				if (e instanceof CaimitoException)
+					throw (CaimitoException)e;
+				else
+					CaimitoException.throwException(e);
+		
+			}
+		}
+		
+		
 		if (X_Storage_Url == null || X_Auth_Token == null){
 			 
 			if (!curl.endsWith("/tokens"))
 			curl = curl + "/tokens";
-		Hashtable<String,String> pc = new Hashtable<String,String>();
-		pc.put("username",CaimitoConfig.getConfig().getString("cloud.username"));
-		pc.put("password",CaimitoConfig.getConfig().getString("cloud.api.key_password"));
+
+/*
+			HashMap<String,String> pc = new HashMap<String,String>();
+	//	Hashtable<String,Hashtable<String,String>> auh = new Hashtable<String,Hashtable<String,String>>();
+		HashMap auh = new HashMap();
+
+		if (!CaimitoConfig.getConfig().getBoolean("getTenantNameFromUserName"))
+			pc.put("username",u);
+		else{
+			String[] toku = u.split(":");	
+			pc.put("username",toku[1]);
+			auh.put("tenantName",toku[0]);
+		}
+		pc.put("password",p);
 	
-		Hashtable<String,Hashtable<String,String>> auh = new Hashtable<String,Hashtable<String,String>>();
+		//Hashtable<String,Hashtable<String,String>> auh = new Hashtable<String,Hashtable<String,String>>();
 		auh.put("passwordCredentials",pc);
 	
-		Hashtable tl = new Hashtable();
+		HashMap tl = new HashMap();
 		tl.put("auth",auh);
 		
 		h = new Hashtable<String,String>();
@@ -505,6 +668,9 @@ try{
 
 		Gson gson = new Gson();
 		String json = gson.toJson(tl);
+		
+		//(" JZ " + json);
+		
 		ByteArrayInputStream dest = new ByteArrayInputStream(json.getBytes());
 
 		nv = HttpClientUtil.trustPost(h,curl,dest);
@@ -518,10 +684,30 @@ try{
 		X_Auth_Token = oa.access.token.id;
 		if (X_Storage_Url == null || X_Auth_Token == null)
 		CaimitoException.throwException("unable_to_auth");
-
+		
+		*/
+			Map<String,String> eps = null;
+			
+			try{
+				 eps = authv2( u, p, curl,false);
+			}catch (Exception e){
+				eps = authv2( u, p, curl,true);
+			}
+			X_Storage_Url = eps.get("X_Storage_Url");	
+			X_Auth_Token = eps.get("X_Auth_Token");	
 		
 		}
 		authtime = System.currentTimeMillis();
+		
+		 uAuthM = new HashMap();
+			authM.put(u,uAuthM);
+		
+			uAuthM.put("X_Auth_Token",X_Auth_Token);
+			uAuthM.put("X_Storage_Url",X_Storage_Url);
+			uAuthM.put("authtime",authtime);
+		
+		
+		
 		}catch (Throwable e){
 			e.printStackTrace();
 			CaimitoException.throwException(e);
@@ -537,36 +723,59 @@ try{
 		auth();
 
 		Hashtable<String,String> h = new Hashtable<String,String>();
-		h.put("X-Auth-Token",X_Auth_Token);
+		h.put("X-Auth-Token",X_Auth_Token());
 		String p2 = path;
 		if (p2.endsWith("/"))
 			p2 = p2.substring(0,p2.length() -1);
 			//p2 = p2 + "/";
 	//	?prefix=photos/&delimiter=/
-		boolean isroot = (p2.equals("/") || p2.equals(""));
+		//isroot = (p2.equals("/") || p2.equals(""));
 		String pars =  "?delimiter=/";	
-		if (!isroot){
+		//boolean ist = isStorage(p2);
+		String pa =  getRootPath();
+		if (!isRoot()){
 		String p2b = p2;
 		if (p2b.startsWith("/"))
 			p2b = p2b.substring(1,p2b.length());
+		   //if (!ist)
+		
+		if  ( CaimitoConfig.cloud_setup==CaimitoConfig.cloud_accounts_for_administration_only)
+		{
+			int i = p2b.indexOf("/");
+			if (i > 0){
+				pa = "/" + p2b.substring(0,i);
+				p2b = p2b.substring(i + 1,p2b.length());			
+			}
+			else{
+				pa = "/" + p2b;
+				p2b = "";
+			}
+		}
+	    
+		
+			if (p2b.length() > 0)
 			pars = pars + "&prefix=" + CaimitoUtil.urlEncode(p2b) + "/";
 		}
+		//String pa =  getRootPath();
+		//if (ist)
+		//	pa = p2;
 		//pars = "";
-		//("***doList1 " + X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store") + CaimitoUtil.urlEncode(p2) + pars + " --> " + h + " h <-->nv ");		 
+		//("***doList1 " + X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("") + CaimitoUtil.urlEncode(p2) + pars + " --> " + h + " h <-->nv ");		 
 //+ CaimitoUtil.urlEncode(p2)
-		String nv = HttpClientUtil.trustGet(h,X_Storage_Url + "/" + CaimitoConfig.getConfig().getString("cloud.store")  + pars);
+		String nv = HttpClientUtil.trustGet(h,X_Storage_Url() + pa + pars);
+		//(X_Storage_Url() + pa + pars + " ZELIST " + nv);
 		
 		if (nv == null || nv.length() < 1)return l;
 		ByteArrayInputStream bin = new ByteArrayInputStream(nv.getBytes());
 		EZArrayList lblv = new EZArrayList(bin);
 		bin.close();
-		String oa = null;
+//		String oa = null;
 			OpenStackResourceObj ro = null;
 	String dn = "";
-	String ps = "";
+//	String ps = "";
 
-	if (!path.endsWith("/"))
-		ps = "/";
+//	if (!path.endsWith("/"))
+	//	ps = "/";
 				for (int ct = 0;ct < lblv.size();ct++)
 		{
 			dn = lblv.elementAt(ct).toString();
@@ -597,17 +806,20 @@ try{
 			}
 			//(path + " OS LIST " + dn);
 			ro = new OpenStackResourceObj();
+			
 
 			ro.path =  "/" + dn;
 			ro.user = user;
 			ro.listing = listing;
 			ro.ex = true;
+			ro.store = pa;
 			
-			
+			//(path + " OS LIST " + ro.path + ":" + ro.store);		
 			l.add(ro);
 
 
 		}
+				store = pa;
 		
 		
 		

@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-Tue Jun 05 14:00:21 PDT 2012:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.2.2 - (1181258): instance a816c00e-0137-be72-c544-000002f61848 
+Tue Sep 04 01:27:13 PDT 2012:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.2.2 - (1181258): instance a816c00e-0139-9063-f3d7-000002bafa60 
 on database directory /home/idrive/caimito/bin/caimito_db  with class loader org.apache.catalina.loader.StandardClassLoader@1df5a8f 
 Loaded from file:/home/idrive/caimito/lib/derby.jar
 java.vendor=Sun Microsystems Inc.

@@ -1,11 +1,10 @@
-attributes{
+model{
 path
 listing:bool
 }
-access{
-view:owner
-delete:owner
+control{
+create:member,enduser
+read:owner
 update:owner
-list:owner
-add:member,enduser
+delete:owner
 }

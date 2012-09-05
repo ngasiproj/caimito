@@ -60,7 +60,7 @@ public class FileResourceObj extends ResourceObj
     	public InputStream doGetInputStream()throws CaimitoException{
     		try{
     		
-    		return new FileInputStream(getHome() + path);
+    		return new FileInputStream(getHome() + getPath());
     		}catch (Exception e){
     			e.printStackTrace();
    			CaimitoException.throwException(e);
@@ -74,16 +74,16 @@ public class FileResourceObj extends ResourceObj
 		public void doWrite(InputStream dest)throws CaimitoException{
 		try{
 			if (dest.available() < 0)return;
-		FileOutputStream fout = new	FileOutputStream(getHome() + path);
+		FileOutputStream fout = new	FileOutputStream(getHome() + getPath());
 		try{
-			//(getHome() + path + " dO THE WRITE THING " + dest.available());
+			//(getHome() + getPath() + " dO THE WRITE THING " + dest.available());
 			StreamUtil.write(dest,fout);
 			
 			         byte buffer[] = new byte[BUFFER_SIZE];
             int len = -1;
                 while (true) {
                     len = dest.read(buffer);
-			//(getHome() + path + " dO THE WRITE THING ********* " + len);
+			//(getHome() + getPath() + " dO THE WRITE THING ********* " + len);
 
                     if (len == -1)
                         break;
@@ -105,10 +105,10 @@ public class FileResourceObj extends ResourceObj
 		public void doCopy(ResourceObj dest)throws CaimitoException{
 		try{
 		
-			if (new File(getHome() + path).isDirectory())
+			if (new File(getHome() + getPath()).isDirectory())
 			new File(getHome() + dest.path).mkdirs();
 
-			FileUtil.copy(getHome() + path,getHome() + dest.path);
+			FileUtil.copy(getHome() + getPath(),getHome() + dest.path);
 		 		}catch (Exception e){
     			e.printStackTrace();
    			CaimitoException.throwException(e);
@@ -120,10 +120,10 @@ public class FileResourceObj extends ResourceObj
 				public void doMove(ResourceObj dest)throws CaimitoException{
 		try{
 		
-		//	if (new File(getHome() + path).isDirectory())
+		//	if (new File(getHome() + getPath()).isDirectory())
 		//	new File(getHome() + dest.path).mkdirs();
 
-			new File(getHome() + path).renameTo(new File(getHome() + dest.path));
+			new File(getHome() + getPath()).renameTo(new File(getHome() + dest.path));
 		 		}catch (Exception e){
     			e.printStackTrace();
    			CaimitoException.throwException(e);
@@ -133,13 +133,13 @@ public class FileResourceObj extends ResourceObj
 
 	public boolean doExists()throws CaimitoException{
 		
-		return new File(getHome() + path).exists();
+		return new File(getHome() + getPath()).exists();
 	}
 	public void doDelete()throws CaimitoException{
 		try{
 		
-		FileUtil.deleteAll(getHome() + path);
-		new File(getHome() + path).delete();
+		FileUtil.deleteAll(getHome() + getPath());
+		new File(getHome() + getPath()).delete();
 		}catch (Exception e){
 			e.printStackTrace();
 			CaimitoException.throwException(e);
@@ -149,7 +149,7 @@ public class FileResourceObj extends ResourceObj
 		public void doMkdir()throws CaimitoException{
 		try{
 		
-		new File(getHome() + path).mkdirs();
+		new File(getHome() + getPath()).mkdirs();
 		}catch (Exception e){
 			e.printStackTrace();
 			CaimitoException.throwException(e);
@@ -157,30 +157,30 @@ public class FileResourceObj extends ResourceObj
 	}
 
 	public long getLastModified()throws CaimitoException{
-	return new File(getHome() + path).lastModified();
+	return new File(getHome() + getPath()).lastModified();
 	}
 
 	public boolean isDirectory()throws CaimitoException{
-	return new File(getHome() + path).isDirectory();
+	return new File(getHome() + getPath()).isDirectory();
 	}
 	public long getContentLength()throws CaimitoException{
-	//(getHome() + path + " GET THE LENGTH " + new File(getHome() + path).length() );
-	return new File(getHome() + path).length();
+	//(getHome() + getPath() + " GET THE LENGTH " + new File(getHome() + getPath()).length() );
+	return new File(getHome() + getPath()).length();
 	}	
 
 	public Vector<ResourceObj> doList()throws CaimitoException{
 	Vector<ResourceObj> l = new Vector<ResourceObj>();
 	
-	String[] dl = new File(getHome() + path).list();
+	String[] dl = new File(getHome() + getPath()).list();
 	String ps = "";
-	if (!path.endsWith("/"))
+	if (!getPath().endsWith("/"))
 		ps = "/";
 	if (dl != null){
 		FileResourceObj ro = null;
 		for (int ct = 0; ct < dl.length;ct++){
 			ro = new FileResourceObj();
-			ro.path =  path + ps + dl[ct];
-			//(getHome() + path + ps + " DO LISTER " + dl[ct]);
+			ro.path =  getPath() + ps + dl[ct];
+			//(getHome() + getPath() + ps + " DO LISTER " + dl[ct]);
 			ro.user = user;
 			ro.listing = listing;
 			l.add(ro);
@@ -191,6 +191,9 @@ public class FileResourceObj extends ResourceObj
 	
 	}
 
+		public String getPath(){
+			return path;
+		}
 	
 }
 

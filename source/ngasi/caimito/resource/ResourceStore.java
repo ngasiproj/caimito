@@ -36,11 +36,14 @@ import java.nio.charset.Charset;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import ngasi.caimito.*;
-import org.shaft.server.auth.*;
+import ngasi.caimito.usermgr.CaimitoUserMgr;
+
+//import org.shaft.server.auth.*;
 import tools.util.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
+import java.io.BufferedInputStream;
 import java.io.UnsupportedEncodingException;
 import org.shaft.server.utils.*;
 import tools.util.*;
@@ -65,7 +68,8 @@ public class ResourceStore
 
 	    public static  ResourceObj lookup(String path, HttpServletRequest request)
         throws CaimitoException {
-        	String	u = (String)request.getAttribute(CaimitoConfig.caimitouserreqobj);
+        	//("GET Z PAth " + path);
+	    	String	u = (String)request.getAttribute(CaimitoConfig.caimitouserreqobj);
         	if (u == null)
         	u = login(request);
         	return lookup(path,u);
@@ -82,7 +86,7 @@ public class ResourceStore
 	    public static  boolean isPublicPath(String path,CaimitoBooleanHolder l,String u)
         throws CaimitoException {
         	try{
-          	if (path.startsWith("/" + CaimitoConfig.shaftapp + "/") || path.equals("/favicon.ico"))
+         		if (path.startsWith("/" + CaimitoConfig.shaftapp + "/") || path.equals("/favicon.ico"))
       			return true;
         	if (path.startsWith("/"))
         		path = path.substring(1,path.length());
@@ -136,7 +140,7 @@ public class ResourceStore
 					return false;
 	           	if (!path.startsWith(nvp.getString("path") + "/") && !(path + "/").startsWith(nvp.getString("path") + "/"))
 	           		return false;
-	           	if (u == null || (!su.equals(u) && !UserMgr.getUserMgr(CaimitoConfig.shaftapp).isAdminOrOwnerOf(CaimitoConfig.shaftapp,u,su)))
+	           	if (u == null || (!su.equals(u) && !CaimitoUserMgr.get().isAdminOrOwnerOf(u,su)))
 				l.value = (res.getBoolean(3));
 				else
 				l.value = CaimitoConfig.getConfig().getBoolean("resource.dir.listing");
@@ -160,11 +164,11 @@ public class ResourceStore
 			try{
 		String sql = "SELECT * from " + CaimitoConfig.shaftapp + "_pathprivileges where resourceuser = ? AND shaftowner = ?";
 
-		//	username = UserMgr. (CaimitoConfig.shaftapp).getOwner(CaimitoConfig.shaftapp,username); 	
+		//	username = . (CaimitoConfig.shaftapp).getOwner(CaimitoConfig.shaftapp,username); 	
 		//	if (username == null)
 		//		break;
 		boolean isadmin = false;
-		if (RealmMgr.getRealmMgr(CaimitoConfig.shaftapp).isAdmin(CaimitoConfig.shaftapp,u)){
+		if (CaimitoUserMgr.get().isAdmin(u)){
 sql = "SELECT * from " + CaimitoConfig.shaftapp + "_pathprivileges where resourceuser = ?";
 		
 		 isadmin = true;
@@ -173,7 +177,7 @@ sql = "SELECT * from " + CaimitoConfig.shaftapp + "_pathprivileges where resourc
 			spq.setTemplate(sql);
 			spq.addVariable(u);
 			if (!isadmin)
-			spq.addVariable(UserMgr.getUserMgr(CaimitoConfig.shaftapp).getOwner(CaimitoConfig.shaftapp,u));
+			spq.addVariable(CaimitoUserMgr.get().getOwner(u));
 				
 			return spq.getHash();
 			}
@@ -201,10 +205,10 @@ sql = "SELECT * from " + CaimitoConfig.shaftapp + "_pathprivileges where resourc
 			String path2 = null;
 			String username = u;
 			while (true){
-			username = UserMgr.getUserMgr(CaimitoConfig.shaftapp).getOwner(CaimitoConfig.shaftapp,username); 	
+			username = CaimitoUserMgr.get().getOwner(username); 	
 			if (username == null)
 				break;
-			if (RealmMgr.getRealmMgr(CaimitoConfig.shaftapp).isAdmin(CaimitoConfig.shaftapp,username))
+			if (CaimitoUserMgr.get().isAdmin(username))
 				break;
 			if (path2 == null)path2 = "";
 			path2 =  getUserPrivFromDB(username).getString("path") + "/" + path2;
@@ -237,8 +241,7 @@ sql = "SELECT * from " + CaimitoConfig.shaftapp + "_pathprivileges where resourc
                                  HttpServletResponse response,int action)
         throws CaimitoException {
         	String u = null;
-        	//ResourceObj ro = null;
-        	
+        	//("GET Z PAth  2 " + path);      	
         	if (path.equals("/") || path.equals(""))
         	{
         	if (CaimitoConfig.protectedRoot)
@@ -257,7 +260,7 @@ sql = "SELECT * from " + CaimitoConfig.shaftapp + "_pathprivileges where resourc
         	}
 try{
         	//(action + ":" + path + " THE USER IS " + u);
-        	if (RealmMgr.getRealmMgr(CaimitoConfig.shaftapp).isAdmin(CaimitoConfig.shaftapp,u))
+        	if (CaimitoUserMgr.get().isAdmin(u))
         	return lookup(path,u);
 
         	
@@ -284,7 +287,8 @@ try{
         	//(u + " PRIVILEGE GO " + nvp);
         	        	if (nvp == null || nvp.size() < 1)
         	{
-             response.sendError(HttpServletResponse.SC_FORBIDDEN);
+             //response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        	  CaimitoDefaultServlet.renderError(request,response,HttpServletResponse.SC_FORBIDDEN);
        		return null;
         	}
        
@@ -293,15 +297,17 @@ try{
         	{
             	//(u + " PRIVILEGE GO 2 " + nvp);
 
-             response.sendError(HttpServletResponse.SC_FORBIDDEN);
-       		return null;
+            // response.sendError(HttpServletResponse.SC_FORBIDDEN);
+             	  CaimitoDefaultServlet.renderError(request,response,HttpServletResponse.SC_FORBIDDEN);
+        		return null;
         	}
            	if (!path.startsWith("/" + nvp.getString("path") + "/") && !(path + "/").startsWith("/" + nvp.getString("path") + "/"))
         	{
         	//(path + " PRIVILEGE GO 3 " + nvp);
 
-             response.sendError(HttpServletResponse.SC_FORBIDDEN);
-       		return null;
+       //      response.sendError(HttpServletResponse.SC_FORBIDDEN);
+             	  CaimitoDefaultServlet.renderError(request,response,HttpServletResponse.SC_FORBIDDEN);
+           		return null;
         	}else lookup("/" + nvp.getString("path") + "/",u) .mkdir();    	
           	return lookup(path,u);
       	
@@ -329,12 +335,15 @@ try{
         throws CaimitoException {
         	ResourceObj ro = null;
 			//if (u == null)
-			//	Thread.dumpStack();
-        	//(u +  " WOWWW SD 1 " + CaimitoConfig.resource + ":" + path);
-        	if (path.startsWith("/" + CaimitoConfig.shaftapp + "/") || path.equals("/favicon.ico"))
+			//	
+        	//(u +  " ***************WOWWW SD 1 " + CaimitoConfig.resource + ":" + path);
+        	if (path.startsWith("/" + CaimitoConfig.shaftapp + "/"))// || path.equals("/favicon.ico"))
         	{
+        		//if (path.equals("/favicon.ico"))
+        			//path = "/" + CaimitoConfig.shaftapp + "/public/favicon.ico" ;
                		if (!path.startsWith("/" + CaimitoConfig.shaftapp + "/public/"))
                			path = "/" + CaimitoConfig.shaftapp + "/public/" + path.substring(CaimitoConfig.shaftapp.length() + 1,path.length());
+               		//(" FAV NEW PATH " + path);
                		ro = new ShaftResourceObj();
  		
         	}
@@ -353,6 +362,16 @@ try{
         		ro.path = path;
         		ro.listing = CaimitoConfig.getConfig().getBoolean("resource.dir.listing");
         	}
+        	
+    		if (path.equals("/favicon.ico") && !ro.exists()){
+    			path = "/" + CaimitoConfig.shaftapp + "/public/favicon.ico" ;
+           		ro = new ShaftResourceObj();
+        		ro.user = u;
+        		ro.path = path;
+    		}
+        	
+    		//("ZPATH " + path);
+        	
         	return ro;
         }
      
@@ -369,9 +388,9 @@ try{
 
 try{
 
-          return UserMgr.getUserMgr(CaimitoConfig.shaftapp).getMD5Digest(CaimitoConfig.shaftapp,username);  
+          return CaimitoUserMgr.get().getMD5Digest(username);  
         /*String digestValue = username + ":" + realmName + ":"
-            + UserMgr. (CaimitoConfig.shaftapp).getPasswd(CaimitoConfig.shaftapp,username);
+            + . (CaimitoConfig.shaftapp).getPasswd(CaimitoConfig.shaftapp,username);
 
         byte[] valueBytes = null;
             valueBytes = digestValue.getBytes(Charset.defaultCharset());
@@ -457,9 +476,43 @@ String realm = (String)nvp.get("realm");
                                 )
         throws CaimitoException {
         	String ua = request.getHeader("user-agent");
+        	
+        	/*java.util.Enumeration hs = request.getHeaderNames();
+        	while (hs.hasMoreElements())
+        	{
+        		String hn = (String)hs.nextElement();
+        		String hv = request.getHeader(hn);   
+           	  
+        	}
+        	
+        	
+        	java.util.Enumeration hds = request.getParameterNames();
+        	while (hds.hasMoreElements())
+        	{
+        		String hd = (String)hds.nextElement();
+        		String hdv = request.getParameter(hd);
+        		//(hd + " PAR " + hdv);
+         	}
+        	
+        	String ct = request.getContentType();
+        	if (ct != null && ct.equals("application/xml"))
+        	{
+        	    int cl = request.getContentLength();   
+        	    if (cl > 0){
+        		byte[] transferBuffer = new byte[cl];
+        		try{
+        	       BufferedInputStream  requestBufInStream =     new BufferedInputStream(request.getInputStream(), cl);
+        	       requestBufInStream.read(transferBuffer);  		
+        		}catch (Exception e){
+        			e.printStackTrace();
+        		}
+        		}
+        	}
+        	
         	//if (ua.equals("Microsoft Data Access Internet Publishing Provider DAV") || ua.indexOf("davfs2") > -1 || CaimitoConfig.getConfig().getString(ua + ".auth").equals("basic"))
         	//	return basicLogin(request,response);
-        		//("USER AGAENT " + ua);
+        		
+        		*/
          		if (CaimitoConfig.getConfig().getString(ua + ".auth").equals("digest"))
          		return digestLogin(request,response);
        			return basicLogin(request,response);
@@ -470,7 +523,8 @@ String realm = (String)nvp.get("realm");
                                  HttpServletResponse response
                                 )
         throws CaimitoException {
-        							NameValuePairs nvp = new NameValuePairs();
+        		//("DIGEST LOGIN 1");
+        	    	NameValuePairs nvp = new NameValuePairs();
         					String hr = request.getHeader("Authorization");
 					if (hr != null)
 					{
@@ -500,7 +554,7 @@ try{
 							
 							
 							String name = authenticate(nvp);
-							//if (UserMgr. (CaimitoConfig.shaftapp).login(CaimitoConfig.shaftapp,name,pass) != null)
+							//if (. (CaimitoConfig.shaftapp).login(CaimitoConfig.shaftapp,name,pass) != null)
 							if (name != null)
 							{
 								//request.setPrincipal(RealmEngine.get().getPrincipal(name));
@@ -557,7 +611,8 @@ try{
 		//(nonce1 + " IS NOT STALE " + isn);
         setAuthenticateHeader(request, response,  nonce,
                 isn);
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        //response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+     	  CaimitoDefaultServlet.renderError(request,response,HttpServletResponse.SC_UNAUTHORIZED);
 	    }
         catch (Exception e)
         {
@@ -676,11 +731,11 @@ tid = Crypto.digest(tid,dig);
 							//(nvp + " BASIC 1 " + hr);
 							byte[] b = Base64Decoder.fromBase64(hr.getBytes());
 							String auth = new String(b);
-							String name = auth.substring(0,auth.indexOf(":"));
-							String pass = auth.substring(auth.indexOf(":") + 1,auth.length());
+							String name = auth.substring(0,auth.lastIndexOf(":"));
+							String pass = auth.substring(auth.lastIndexOf(":") + 1,auth.length());
 							try{
 							
-							if (UserMgr.getUserMgr(CaimitoConfig.shaftapp).login(CaimitoConfig.shaftapp,name,pass,false) != null)
+							if (CaimitoUserMgr.get().login(name,pass) != null)
 							{
 								//request.setPrincipal(RealmEngine.get().getPrincipal(name));
 								//request.setAuthType("BASIC");
@@ -715,10 +770,13 @@ tid = Crypto.digest(tid,dig);
 			response.sendRedirect("https://" + request.getServerName()  + fau);
 				return;
 			}*/
+			String rn = CaimitoConfig.SecurityRealmName;
+
+	    	//("BASIC ERROR SENT " + rn);
 				response.setHeader("Content-Type","text/html");
-				String rn = CaimitoConfig.SecurityRealmName;
 		    	response.setHeader("WWW-Authenticate","Basic realm=\"" + rn + "\"");
-				response.sendError(401);
+				//response.sendError(401);
+		    	CaimitoDefaultServlet.renderError(request,response,401);
 	    }
         catch (Exception e)
         {

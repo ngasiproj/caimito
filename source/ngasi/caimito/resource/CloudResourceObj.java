@@ -32,6 +32,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package ngasi.caimito.resource;
 import ngasi.caimito.*;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -45,9 +46,31 @@ import java.io.InputStream;
 import tools.util.FileUtil;
 public abstract class CloudResourceObj extends ResourceObj
     {
+	static String rpath = null;
+	static String arpath = null;
+	public String store = null;
+	static{
+		if (CaimitoConfig.cloud_setup==CaimitoConfig.cloud_accounts_for_administration_only){
+			rpath = "";
+			arpath = "";
+		}
+		else
+			try {
+				rpath = "/" + CaimitoConfig.getConfig().getString("cloud.store");
+				arpath = "/" + CaimitoConfig.getConfig().getString("cloud.store");
+			} catch (CaimitoException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
     	public InputStream doGetInputStream()throws CaimitoException{
     		try{
-		String tf = CaimitoConfig.cachedir + path;
+		String tf = CaimitoConfig.cachedir ;
+		if (CaimitoConfig.cloud_setup==CaimitoConfig.cloud_accounts_for_administration_only)
+			tf = tf + "/" + CaimitoUtil.normalize(user) + "/";	
+		tf = tf + path;
+
+		
 			if (CaimitoConfig.cacheable){
 				File ftf = new File(tf);
 				if (ftf.exists() && ftf.lastModified() == getLastModified())
@@ -101,7 +124,12 @@ public abstract class CloudResourceObj extends ResourceObj
     			try{
     				deleteCloudFile();
     			}finally{
-    			String tf = CaimitoConfig.cachedir + path;
+    			String tf = CaimitoConfig.cachedir;
+    			
+    			if (CaimitoConfig.cloud_setup==CaimitoConfig.cloud_accounts_for_administration_only)
+    				tf = tf + "/" + CaimitoUtil.normalize(user) + "/";	
+    			tf = tf   + path;
+    			
 				FileUtil.deleteAll(tf);
 				new File(tf).delete();
     			}
@@ -111,6 +139,69 @@ public abstract class CloudResourceObj extends ResourceObj
 
     		}
     		}
+    		
+    		public boolean isRoot(){
+    			return (path.equals("/") || path.equals(""));
+    		}
+    		
+    	public  String getRootPath(){
+    		if (store != null)return store;
+    		return rpath;
+    	}
+    	
+    	public String getStorage(){
+    		//if (store != null)return store;
+    		if (!isRoot()){
+    			String p2b = path;
+    			if (p2b.endsWith("/"))
+    				p2b = p2b.substring(0,p2b.length() -1);
+    	
+    			if (p2b.startsWith("/"))
+    				p2b = p2b.substring(1,p2b.length());
+    			   //if (!ist)
+    			
+    			if  ( CaimitoConfig.cloud_setup==CaimitoConfig.cloud_accounts_for_administration_only)
+    			{
+    				int i = p2b.indexOf("/");
+    				if (i > 0){
+    					return "/" + p2b.substring(0,i);
+    					//p2b = p2b.substring(i + 1,p2b.length());			
+    				}
+    				else{
+    					return  "/" + p2b;
+    					//p2b = "";
+    				}
+    			}
+    		}
+    		//if (pathEquals(store))store = null;
+    		//return store;
+    		return null;
+    	}
+    	
+ 
+    	public static String getAbsoluteRootPath(){
+    		return arpath;
+    	}
+    	
+    	public boolean pathEquals(String p){
+    		if (path == null || p == null)return false;
+    		String p1 = path;
+    		if (p1.startsWith("/"))
+    			p1 = p1.substring(1,p1.length());
+       		if (p.startsWith("/"))
+    			p = p.substring(1,p.length());
+     		if (p1.endsWith("/"))
+    			p1 = p1.substring(0,p1.length() -1);
+    		if (p.endsWith("/"))
+    			p = p.substring(0,p.length() -1);
+ 
+     		return (p1.equals(p));
+   
+    	}
+    	
+    	public boolean isStorage(String p2){
+    		return  (p2.length() > 1 && (p2.lastIndexOf("/") < 1 || p2.substring(0,p2.length() -1).lastIndexOf("/") < 1)&& CaimitoConfig.cloud_setup==CaimitoConfig.cloud_accounts_for_administration_only);
+    	}
     	
     	public abstract void retrieveCloudFile(String path,String tf)throws CaimitoException;
     	public abstract void deleteCloudFile()throws CaimitoException;
