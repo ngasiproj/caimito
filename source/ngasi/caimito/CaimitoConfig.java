@@ -51,6 +51,7 @@ public static String caimitouserreqobj = "caimitouserreqobj";
 	public static boolean cacheable = true;
 	public static String serverinfo = "Caimito";
 	public static String CAIMITO_CSS = null;
+<<<<<<< HEAD
 	public static String version = "0.8";
 	public static long requestTimeout = 30 * 60 * 1000;
 	public static int single_cloud_account_with_single_storage = 1;
@@ -58,6 +59,9 @@ public static String caimitouserreqobj = "caimitouserreqobj";
 	
 	public static int cloud_setup=single_cloud_account_with_single_storage;
 	
+=======
+	public static String version = "0.4";
+>>>>>>> 81b81b090d652d7b3c1de4359597c4836eb617da
 	public static void init()throws CaimitoException{
 			if (! new File(getConfigFile()).exists())
 			{

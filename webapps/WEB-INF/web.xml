@@ -29,6 +29,7 @@
   </description>
       <filter>
           <filter-name>shf</filter-name>
+<<<<<<< HEAD
           <filter-class>org.shaft.ShaftAsyncFilter</filter-class>
 	<async-supported>true</async-supported>
       </filter>
@@ -38,6 +39,13 @@
 <url-pattern>/WEB-INF/*</url-pattern>
 <url-pattern>/shaftapps/*</url-pattern>
 <url-pattern>/ca/*</url-pattern>
+=======
+          <filter-class>org.shaft.ShaftFilter</filter-class>
+      </filter>
+      <filter-mapping>
+          <filter-name>shf</filter-name>
+          <url-pattern>/*</url-pattern>
+>>>>>>> 81b81b090d652d7b3c1de4359597c4836eb617da
       </filter-mapping> 
 
   
@@ -52,15 +60,23 @@
       </servlet>
       <servlet-mapping>
           <servlet-name>Jersey Web Application</servlet-name>
+<<<<<<< HEAD
           <url-pattern>/ca/shaftrest1/*</url-pattern>
 <url-pattern>/shaftrest1/*</url-pattern>
+=======
+          <url-pattern>/shaftrest/*</url-pattern>
+>>>>>>> 81b81b090d652d7b3c1de4359597c4836eb617da
     </servlet-mapping>
   
 
  <servlet>
   <servlet-name>webdav</servlet-name>
+<<<<<<< HEAD
   <servlet-class>ngasi.caimito.CaimitoAsyncWebdavServlet</servlet-class>
 <async-supported>true</async-supported>
+=======
+  <servlet-class>ngasi.caimito.CaimitoWebdavServlet</servlet-class>
+>>>>>>> 81b81b090d652d7b3c1de4359597c4836eb617da
     <init-param>
       <param-name>debug</param-name>
       <param-value>0</param-value>
@@ -88,10 +104,13 @@
 		<location>/ca/401.html</location>
 	</error-page> 
  	<error-page>
+<<<<<<< HEAD
 		<error-code>403</error-code>
 		<location>/ca/403.html</location>
 	</error-page>  
 	<error-page>
+=======
+>>>>>>> 81b81b090d652d7b3c1de4359597c4836eb617da
 		<error-code>500</error-code>
 		<location>/ca/500.html</location>
 	</error-page> 

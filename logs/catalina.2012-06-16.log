@@ -1,0 +1,34 @@
+Jun 16, 2012 10:41:13 AM org.apache.catalina.core.AprLifecycleListener init
+INFO: The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path: /usr/caimito/jdk/jre/lib/i386/server:/usr/caimito/jdk/jre/lib/i386:/usr/caimito/jdk/jre/../lib/i386:/usr/java/packages/lib/i386:/lib:/usr/lib
+Jun 16, 2012 10:41:14 AM org.apache.coyote.AbstractProtocol init
+INFO: Initializing ProtocolHandler ["http-bio-8619"]
+Jun 16, 2012 10:41:14 AM org.apache.coyote.AbstractProtocol init
+INFO: Initializing ProtocolHandler ["ajp-bio-8659"]
+Jun 16, 2012 10:41:14 AM org.apache.catalina.startup.Catalina load
+INFO: Initialization processed in 1438 ms
+Jun 16, 2012 10:41:14 AM org.apache.catalina.core.StandardService startInternal
+INFO: Starting service Catalina
+Jun 16, 2012 10:41:14 AM org.apache.catalina.core.StandardEngine startInternal
+INFO: Starting Servlet Engine: Apache Tomcat/7.0.27
+Jun 16, 2012 10:41:14 AM org.apache.catalina.startup.HostConfig deployDescriptor
+INFO: Deploying configuration descriptor /usr/caimito/conf/Catalina/localhost/ROOT.xml
+Jun 16, 2012 10:41:17 AM org.apache.coyote.AbstractProtocol start
+INFO: Starting ProtocolHandler ["http-bio-8619"]
+Jun 16, 2012 10:41:17 AM org.apache.coyote.AbstractProtocol start
+INFO: Starting ProtocolHandler ["ajp-bio-8659"]
+Jun 16, 2012 10:41:17 AM org.apache.catalina.startup.Catalina start
+INFO: Server startup in 2805 ms
+Jun 16, 2012 10:44:20 AM org.apache.coyote.AbstractProtocol pause
+INFO: Pausing ProtocolHandler ["http-bio-8619"]
+Jun 16, 2012 10:44:20 AM org.apache.coyote.AbstractProtocol pause
+INFO: Pausing ProtocolHandler ["ajp-bio-8659"]
+Jun 16, 2012 10:44:20 AM org.apache.catalina.core.StandardService stopInternal
+INFO: Stopping service Catalina
+Jun 16, 2012 10:44:20 AM org.apache.coyote.AbstractProtocol stop
+INFO: Stopping ProtocolHandler ["http-bio-8619"]
+Jun 16, 2012 10:44:20 AM org.apache.coyote.AbstractProtocol stop
+INFO: Stopping ProtocolHandler ["ajp-bio-8659"]
+Jun 16, 2012 10:44:20 AM org.apache.coyote.AbstractProtocol destroy
+INFO: Destroying ProtocolHandler ["http-bio-8619"]
+Jun 16, 2012 10:44:20 AM org.apache.coyote.AbstractProtocol destroy
+INFO: Destroying ProtocolHandler ["ajp-bio-8659"]
