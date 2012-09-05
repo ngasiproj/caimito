@@ -1,0 +1,10 @@
+model{
+bla
+countme:number
+}
+control{
+create:guest
+read:guest
+update:guest
+delete:guest
+}

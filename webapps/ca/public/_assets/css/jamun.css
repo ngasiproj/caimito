@@ -1,0 +1,202 @@
+.ui-dialog { font-size: 62.5%; }
+.ui-dialog label, .ui-dialog input { display:block; }
+		.ui-dialog input.text { margin-bottom:12px; width:95%; padding: .4em; }
+		.ui-dialog fieldset { padding:0; border:0; margin-top:25px; }
+		.ui-dialog h1 { font-size: 1.2em; margin: .6em 0; }
+
+		.ui-dialog .ui-state-error { padding: .3em; }
+.validateTips { border: 1px solid transparent; padding: 0.3em; }
+
+/* Start by setting display:none to make this hidden.
+   Then we position it in relation to the viewport window
+   with position:fixed. Width, height, top and left speak
+   speak for themselves. Background we set to 80% white with
+   our animation centered, and no-repeating */
+.modal {
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url('images/spinner.gif') 
+                50% 50% 
+                no-repeat;
+}
+
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+body.loading {
+    overflow: hidden;   
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+body.loading .modal {
+    display: block;
+}
+
+.ex_highlight  tbody tr.even:hover,  tbody tr.even td.highlighted {
+	background-color: #ECFFB3;
+}
+
+.ex_highlight  tbody tr.odd:hover,  tbody tr.odd td.highlighted {
+	background-color: #E6FF99;
+}
+
+.ex_highlight_row  tr.even:hover {
+	background-color: #ECFFB3;
+}
+
+.ex_highlight_row  tr.even:hover td.sorting_1 {
+	background-color: #DDFF75;
+}
+
+.ex_highlight_row  tr.even:hover td.sorting_2 {
+	background-color: #E7FF9E;
+}
+
+.ex_highlight_row  tr.even:hover td.sorting_3 {
+	background-color: #E2FF89;
+}
+
+.ex_highlight_row  tr.odd:hover {
+	background-color: #E6FF99;
+}
+
+.ex_highlight_row  tr.odd:hover td.sorting_1 {
+	background-color: #D6FF5C;
+}
+
+.ex_highlight_row  tr.odd:hover td.sorting_2 {
+	background-color: #E0FF84;
+}
+
+.ex_highlight_row  tr.odd:hover td.sorting_3 {
+	background-color: #DBFF70;
+}
+
+.ui-icon-add { background-image: url(images/add.png) !important;}
+.ui-icon-edit { background-image: url(images/edit.png) !important;}
+.ui-icon-delete { background-image: url(images/delete.png) !important;}
+
+body{
+	margin: 0px;
+	padding: 0px;
+
+
+width:100%;
+}
+header
+{
+background-color: #FF8FC2;
+ position:absolute;
+top:0;
+width:100%;
+color: #737373;
+
+}
+
+#header h1,h3,img { margin-top: 0px; margin-left: 5px; font-size: 1em; font-weight: normal;}
+
+footer
+{
+background-color: #FF8FC2;
+// position:absolute;
+bottom:0;
+width:100%;
+color: #737373;
+
+}
+
+#footer h1,h3,img,a { margin-top: 0px; margin-left: 5px; font-size: 1em; font-weight: normal; }
+
+nav{
+
+padding: 5px;	
+	position:absolute;
+	right:0;
+	top:2em;
+	
+	border: 2px
+margin-bottom: 0px; 
+margin-top: 0px;
+text-decoration:underline;
+color: #737373;
+cursor:pointer;
+}
+
+.respagesdiv {
+display:none;
+float:right;
+margin-right: 5px;
+padding:5px;
+} 
+
+.respagesdiv label {
+padding:5px;
+}
+
+//
+.clear {clear:both} 
+#nav {
+    margin:0;
+    padding:0;
+    list-style:none;
+
+}  
+
+
+    #nav li {
+        float:left;
+        display:block;
+        width:100px;
+        background:#FF8FC2;
+        position:relative;
+        z-index:500;
+        margin:0 1px;
+text-decoration:underline;
+    }
+         
+
+ 
+    #nav_user:hover {
+        color:#B3B3AE;
+    }
+
+    #nav_submenu li:hover {
+        color:#B3B3AE;
+    }
+
+     
+    /* you can make a different style for default selected value */
+    /*#nav li:selected {
+        color:#f00;
+    }*/
+     
+        /* submenu, it's hidden by default */
+        #nav ul {
+            position:absolute;
+            left:0;
+            display:none;
+            margin:0 0 0 -1px;
+            padding:0;
+            list-style:none;
+        }
+         
+        #nav ul li {
+            width:100px;
+            float:left;
+            border-right:1px solid #737373;
+	border-top:1px solid #737373;
+border-left:1px solid #737373;
+        }
+         
+
+         
+
+ 
+
+

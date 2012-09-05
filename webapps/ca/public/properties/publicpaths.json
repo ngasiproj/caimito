@@ -1,0 +1,4 @@
+{
+"listing.input":{"type":"select","options":{"false":"false","true":"true"}},
+"disable.edit.fields":["path"]
+}

@@ -1,0 +1,335 @@
+<style>
+.ex_highlight #shaftusermgrgrid tbody tr.even:hover, #shaftusermgrgrid tbody tr.even td.highlighted {
+	background-color: #ECFFB3;
+}
+
+.ex_highlight #shaftusermgrgrid tbody tr.odd:hover, #shaftusermgrgrid tbody tr.odd td.highlighted {
+	background-color: #E6FF99;
+}
+
+.ex_highlight_row #shaftusermgrgrid tr.even:hover {
+	background-color: #ECFFB3;
+}
+
+.ex_highlight_row #shaftusermgrgrid tr.even:hover td.sorting_1 {
+	background-color: #DDFF75;
+}
+
+.ex_highlight_row #shaftusermgrgrid tr.even:hover td.sorting_2 {
+	background-color: #E7FF9E;
+}
+
+.ex_highlight_row #shaftusermgrgrid tr.even:hover td.sorting_3 {
+	background-color: #E2FF89;
+}
+
+.ex_highlight_row #shaftusermgrgrid tr.odd:hover {
+	background-color: #E6FF99;
+}
+
+.ex_highlight_row #shaftusermgrgrid tr.odd:hover td.sorting_1 {
+	background-color: #D6FF5C;
+}
+
+.ex_highlight_row #shaftusermgrgrid tr.odd:hover td.sorting_2 {
+	background-color: #E0FF84;
+}
+
+.ex_highlight_row #shaftusermgrgrid tr.odd:hover td.sorting_3 {
+	background-color: #DBFF70;
+}
+</style>
+
+<div>
+<button id="shaftusermgrnewButton"></button>
+<button id="shaftusermgreditButton"></button>
+<button id="shaftusermgrdeleteButton"></button>
+</div>
+<br/>
+<div class="ex_highlight_row">
+<table id='shaftusermgrgrid' cellpadding="0" cellspacing="0" border="0" class="display">
+<thead>
+</thead>
+<tbody>
+
+</tbody>
+</table>
+</div>
+
+
+
+<script>
+
+
+$("#page_title").html(Jamun.getLabel( "shaftusermgr.title"));
+$( 'title' ).html ( Jamun.getLabel( "shaftusermgr.title") );
+$( "#shaftusermgrnewButton" ).button({ label: Jamun.getLabel('New') });
+$( "#shaftusermgrdeleteButton" ).button({ label: Jamun.getLabel('Delete') });
+$( "#shaftusermgreditButton" ).button({ label: Jamun.getLabel('Edit') });
+
+var shaftusermgrgrid ;
+//var attrs;
+
+var url = Jamun.getServerObjURL("shaftusermgr","list");
+$.getJSON(url, function(data) {
+
+if (data['status'] != Jamun.loginOK)
+{
+JamunUI.renderLogin();
+return;
+}
+
+var res = data['response'];
+Jamun.cache["shaftusermgr"] = res;
+
+var attrs = new Array("shaftuser");
+//var fattrs = new Array("shaftuser_new","shaftpassword.new");
+
+
+JamunUI.appendHeaderToGrid("shaftusermgrgrid",attrs);
+
+
+
+
+	$("#shaftusermgrgrid tbody").click(function(event) {
+		$(shaftusermgrgrid.fnSettings().aoData).each(function (){
+			$(this.nTr).removeClass('row_selected');
+		});
+		$(event.target.parentNode).addClass('row_selected');
+	});
+	
+var newfields = "";
+//for (ct = 0; ct < attrs.length;ct++){
+		newfields += '<label for="shaftuser_new">' + Jamun.getLabel("User") + '</label>' +
+		'<input type="text" value="" name="shaftuser_new" id="shaftuser_new" class="text ui-widget-content ui-corner-all" /\>' ;
+		newfields += '<label for="shaftpassword_new">' + Jamun.getLabel("Password") + '</label>' +
+		'<input type="text" value="" name="shaftpassword_new" id="shaftpassword_new" class="text ui-widget-content ui-corner-all" /\>' ;
+
+//}
+
+//begin new
+    $('#shaftusermgrnewButton').click( function() {
+var NewCreateDialog = $('<div id="shaftusermgrNewDialog"><p>' + Jamun.getLabel("confirm_new") + '</p>' +
+	'<form>' +
+	'<fieldset>' + newfields +
+	'</fieldset>' +
+	'</form>' +
+'</div>'
+);
+        NewCreateDialog.dialog({
+	open: function(event, ui) { $(this).parent().children().children('.ui-dialog-titlebar-close').hide();},
+	  
+  autoOpen: true,
+            modal: true,
+	    width: 450,
+            title: Jamun.getLabel("New"),
+            show: 'clip',
+            hide: 'clip',
+            buttons: [
+                {text: Jamun.getLabel("New"), click: function() {
+//var vals = getInputValues("shaftusermgrNewDialog",fattrs);
+var nUser = $('#shaftuser_new', $('#shaftusermgrNewDialog')).val();
+var url = Jamun.getServerObjURL("shaftusermgr",'add');
+$.getJSON(url,{
+"shaftuser.new":$('#shaftuser_new', $('#shaftusermgrNewDialog')).val(),
+"shaftpassword.new":$('#shaftpassword_new', $('#shaftusermgrNewDialog')).val()
+}
+, function(data) {
+
+
+
+if ( data['code']  )
+{
+if (data['code'] == 'unable_to_authenticate')
+{
+$('#shaftusermgrNewDialog').dialog("close");
+$('#shaftusermgrNewDialog').remove();
+JamunUI.renderLogin();
+}else alert(Jamun.getLabel(data['code'])  );
+return;
+}
+
+JamunUI.appendRowToGrid("shaftusermgr",new Array(nUser),nUser);
+Jamun.addCacheItem(nUser);
+
+$('#shaftusermgrNewDialog').dialog("close");
+$('#shaftusermgrNewDialog').remove();
+});
+
+}},
+                {text: Jamun.getLabel("Cancel"), click: function() {
+$(this).dialog("close");
+$('#shaftusermgrNewDialog').remove();
+}}
+            ]
+        });
+
+  
+    } );
+//end new
+
+//begin update
+    $('#shaftusermgreditButton').click( function() {
+
+        var anSelected = JamunUI.fnGetSelected( shaftusermgrgrid );
+       
+if ( anSelected.length !== 0 ) {
+var sData = shaftusermgrgrid.fnGetData( anSelected[0] );
+
+
+
+
+   var NewUpdateDialog =  $('<div id="shaftusermgrEditDialog"><p>' + Jamun.getLabel("confirm_update") + '</p>' +
+	'<form>' +
+	'<fieldset>' +
+
+function(){
+var editfields = "";
+
+		editfields += '<label for="shaftuser_new">' + Jamun.getLabel("User") + '</label>' +
+		'<input type="text" disabled="disabled" value="' + sData[0] + '" name="shaftuser_new" id="shaftuser_new" class="text ui-widget-content ui-corner-all" /\>' ;
+
+		editfields += '<label for="shaftpassword_new">' + Jamun.getLabel("Password") + '</label>' +
+		'<input type="text" value="" name="shaftpassword_new" id="shaftpassword_new" class="text ui-widget-content ui-corner-all" /\>' ;
+
+return editfields;
+}() + 
+
+	'</fieldset>' +
+	'</form>' +
+'</div>'
+);
+   NewUpdateDialog.dialog({
+	open: function(event, ui) { $(this).parent().children().children('.ui-dialog-titlebar-close').hide();},
+	
+    autoOpen: true,
+            modal: true,
+	    width: 450,
+            title: Jamun.getLabel("Update"),
+            show: 'clip',
+            hide: 'clip',
+            buttons: [
+                {text: Jamun.getLabel("Update"), click: function() {
+
+//var vals = getInputValues("shaftusermgrEditDialog",attrs);
+//vals["shaftid"] = sData[attrs.length]
+var url = Jamun.getServerObjURL("shaftusermgr",'update');
+$.getJSON(url,{
+"shaftuser.eq":$('#shaftuser_new', $('#shaftusermgrEditDialog')).val(),
+"shaftpassword.new":$('#shaftpassword_new', $('#shaftusermgrEditDialog')).val()
+}
+, function(data) {
+
+if (data['status'] != Jamun.loginOK)
+{
+
+$('#shaftusermgrEditDialog').dialog("close");
+$('#shaftusermgrEditDialog').remove();
+JamunUI.renderLogin();
+return;
+}
+
+var res = data['response'];
+
+if (res != true){
+if ( data['code'] ){
+if ( data['code'] == 'unable_to_authenticate'){
+$('#shaftusermgrEditDialog').dialog("close");
+$('#shaftusermgrEditDialog').remove();
+JamunUI.renderLogin();
+}
+else
+alert(Jamun.getLabel(data['code']));
+}
+else
+alert(Jamun.getLabel('error')  );
+
+return;
+}
+
+
+
+
+$('#shaftusermgrEditDialog').dialog("close");
+$('#shaftusermgrEditDialog').remove();
+});
+
+}},
+                {text: Jamun.getLabel("Cancel"), click: function() {
+$(this).dialog("close");
+$('#shaftusermgrEditDialog').remove();
+}}
+            ]
+        });
+
+     }
+    } );
+//end update
+
+    $('#shaftusermgrdeleteButton').click( function() {
+        var anSelected = JamunUI.fnGetSelected( shaftusermgrgrid );
+        if ( anSelected.length !== 0 ) {
+
+
+
+var NewDialog = $('<div id="shaftusermgrDeleteDialog"><p>' + Jamun.getLabel("confirm_delete") + '</p></div>');
+        NewDialog.dialog({
+	open: function(event, ui) { $(this).parent().children().children('.ui-dialog-titlebar-close').hide();},
+
+	    autoOpen: true,
+            modal: true,
+            title: Jamun.getLabel("Confirm"),
+            show: 'clip',
+            hide: 'clip',
+            buttons: [
+                {text: Jamun.getLabel("Submit"), click: function() {
+$(this).dialog("close");
+var sData = shaftusermgrgrid.fnGetData( anSelected[0] );
+var url = Jamun.getServerObjURL("shaftusermgr",'delete');
+if (Jamun.pageProperties[Jamun.presentPage]["delete.related.serverobjs"] != null)
+{
+Jamun.batch("delete",{
+"shaftuser.eq":sData[sData.length - 1]
+},attrs,sData,new ProcessDeleteResult(anSelected[0],sData));
+}
+else
+$.getJSON(url,{
+"shaftuser.eq":sData[sData.length - 1]
+}
+, new ProcessDeleteResult(anSelected[0],sData).process(data));
+
+}
+
+},
+                {text: Jamun.getLabel("Cancel"), click: function() {$(this).dialog("close")}}
+            ]
+        });
+
+     }
+    } );
+
+
+
+
+
+	 shaftusermgrgrid = $('#shaftusermgrgrid').dataTable( {
+		"bSortClasses": false,
+		"bJQueryUI": true,
+		"bJUI": true
+	} );
+
+JamunUI.grids[Jamun.presentPage] = shaftusermgrgrid;
+
+for (ct = 0; ct < res.length;ct++){
+	var row = new Array(res[ct],res[ct]);
+	JamunUI.appendRowToGrid("shaftusermgr",row,res[ct]);
+
+}
+});
+
+
+
+
+
+
+</script>

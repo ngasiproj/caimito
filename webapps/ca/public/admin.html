@@ -1,0 +1,114 @@
+<!DOCTYPE html> 
+<html>
+
+<head>
+	<meta charset="utf-8">
+<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">	
+<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<title>Caimito</title> 
+<link rel="Shortcut Icon" href="favicon.ico"/>'
+
+		<link type="text/css" href="_assets/css/ui-lightness/jquery-ui.css" rel="stylesheet" />
+
+		<link type="text/css" href="_assets/media/css/demo_page.css" rel="stylesheet" />
+		<link type="text/css" href="_assets/media/css/demo_table_jui.css" rel="stylesheet" />
+<link type="text/css" href="_assets/media/css/jquery.dataTables_themeroller.css" rel="stylesheet" />
+
+	<link type="text/css" href="_assets/css/jamun.css" rel="stylesheet" />
+
+		
+<script type="text/javascript" src="_assets/js/jquery.js"></script>
+		<script type="text/javascript" src="_assets/js/jquery-ui.js"></script>
+		<script type="text/javascript" language="javascript" src="_assets/media/js/jquery.dataTables.js"></script>
+
+
+<script src="_assets/js/jamun-util.js"></script>
+<script src="_assets/js/jamun.js"></script>
+	<script src="_assets/js/jamun-ui.js"></script>
+<script>
+$(window).load(function(){
+$("body").on({
+    // When ajaxStart is fired, add 'loading' to body class
+    ajaxStart: function() { 
+        $(this).addClass("loading"); 
+    },
+    // When ajaxStop is fired, rmeove 'loading' from body class
+    ajaxStop: function() { 
+        $(this).removeClass("loading"); 
+    }    
+});
+
+
+
+
+});
+
+$(document).ready(function () {
+     
+    $('#nav li').hover(
+        function () {
+            //show its submenu
+            $('ul', this).slideDown(100);
+ 
+        },
+        function () {
+            //hide its submenu
+            $('ul', this).slideUp(100);        
+        }
+    );
+     
+});
+
+  </script>
+</head> 
+
+<body onLoad="Jamun.init();" > 
+
+	    <header> <!-- Defining the header section of the page with the appropriate tag -->
+	        <a href="http://caimito.ngasi.com"><img src="logo.png"/></a><br/>
+	        <h3 >WebDAV, Caching, and Content Management and Delivery server frontend for cloud storage.</h3>
+	        <nav id="login_nav"> 
+<div id="login_nav_login"></div>
+<div id="login_nav_options">
+<ul id="nav">
+<li><div id="nav_user"></div>
+<ul id="nav_submenu">
+<li id="nav_logout"></li>
+<li id="nav_passwdreset"></li>
+<li></li>
+</ul><div class="clear"></div></li></ul>
+</div>
+
+</nav>
+
+	    </header>
+
+<div  id="main">
+<br/><br/><br/><br/><br/>
+
+
+	<div >
+		<h1 id="page_title">...</h1>
+	</div><!-- /header -->
+<div id="pagebuttons">
+
+</div>
+<hr/>
+<!-- pages go here -->
+<div id="pages">
+
+	
+</div>
+
+		
+
+	
+</div><!-- /page -->
+
+
+<div class="modal"></div>
+<br/>
+<footer><h3>powered by: <a href="http://www.jamunapp.com">Jamun</a> <span></span></h3></footer>
+</body>
+</html>

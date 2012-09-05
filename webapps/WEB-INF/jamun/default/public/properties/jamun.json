@@ -1,0 +1,6 @@
+{
+"mobile.clients":["Apple iOS","Android","Windows Phone","Blackberry","Palm WebOS","Firebox Mobile","Chrome for Android","Skyfire","Opera Mobile","Meego","Samsung bada","UC Browser","Kindle","Nook"],
+"mobile.redirect":"jamun-mobile",
+"deployment.mode":"development",
+"pageList":{"testpages":false,"shaftusermgr":true,"pathprivileges":true,"publicpaths":["member","enduser"]}
+}

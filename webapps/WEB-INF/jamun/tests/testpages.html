@@ -1,0 +1,64 @@
+TEST RESULT PAGES
+
+<div>
+<button id="tpButton">Populate</button>
+<form>
+<fieldset>
+<label for="prefix">Prefix</label>
+<input type="text" value="p" name="prefix" id="prefix"  />
+<label for="countme_start">Countme Start</label>
+<input type="number" value="3" name="countme_start" id="countme_start"  />
+<label for="countme_max">Countme Max</label>
+<input type="number" value="1000" name="countme_max" id="countme_max"  />
+</fieldset>
+</form>
+
+</div>
+<br/>
+
+
+
+
+
+<script>
+$("#tpButton").click( function()
+{
+var pref = $("#prefix").val();
+this.ct = parseInt($("#countme_start").val());
+this.mc = parseInt($("#countme_max").val() )+ this.ct;
+var bl = new Array();
+for (; this.ct < this.mc;this.ct ++) 
+{
+
+bm = {};
+bm["serverobj"] = "testpages";
+bm["action"] = "create";
+var tparam = {};
+tparam["bla"] = pref + this.ct;
+tparam["countme"] = this.ct;
+
+bm["params"] = tparam;
+bl.push(bm);
+}
+
+var js = JSON.stringify(bl);
+//alert(js);
+var turl = Jamun.getServerObjURL("batchmgr","process");
+
+xmlhttp=new XMLHttpRequest();
+xmlhttp.onreadystatechange=function()
+  {
+  if (xmlhttp.readyState==4 )
+    {
+    var data = jQuery.parseJSON(xmlhttp.responseText);
+alert(data['status'] + ":" + data['code']  + ":" + data['response'] + ":" + xmlhttp.status);
+    }
+  } ;
+xmlhttp.open("POST",turl,false);
+xmlhttp.send(js);
+
+
+}
+);
+
+</script>

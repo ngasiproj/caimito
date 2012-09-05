@@ -1,0 +1,401 @@
+
+<script>
+
+
+new function(){
+
+this.pgb = '<div>' + 
+'<button id="'+Jamun.presentPage + 'newButton"></button>' + 
+'<button id="'+Jamun.presentPage + 'editButton"></button>' + 
+'<button id="'+Jamun.presentPage + 'deleteButton"></button>' + 
+'</div>' + 
+'<br/\>' + 
+'<div class="respagesdiv" id="'+Jamun.presentPage + 'rpagesdiv">' + 
+'<label for="'+Jamun.presentPage + 'rpageselect">' + Jamun.getLabel('Results_Pages') + '</label>' +
+'<select id="'+Jamun.presentPage + 'rpageselect"></select>' + 
+'</div>' + 
+
+
+'<div class="ex_highlight_row">' + 
+'<table id="'+Jamun.presentPage + 'grid" cellpadding="0" cellspacing="0" border="0" class="display">' + 
+'<thead>' + 
+'</thead>' + 
+'<tbody>' + 
+'</tbody>' + 
+'</table>' + 
+'</div>' ;
+
+$("#"+Jamun.presentPage).append(this.pgb);
+
+$( "#" + Jamun.presentPage +  "newButton" ).button({ label: Jamun.getLabel('New') , icons: {primary: 'ui-icon-add', secondary: null}});
+$( "#" + Jamun.presentPage +  "deleteButton" ).button({ label: Jamun.getLabel('Delete'), icons: {primary: 'ui-icon-delete', secondary: null} });
+$( "#" + Jamun.presentPage +  "editButton" ).button({ label: Jamun.getLabel('Edit') , icons: {primary: 'ui-icon-edit', secondary: null}});
+
+
+var url = Jamun.getServerObjURL(Jamun.presentPage,"read");
+var params = {};
+var tpp = Jamun.getPresentResultsPage();
+if (tpp > 1){
+params["results.page"] = tpp;
+
+}
+
+var resc = Jamun.resultsCache[Jamun.presentPage];
+if (resc == null){
+resc = {};
+Jamun.resultsCache[Jamun.presentPage] = resc;
+}
+
+var res = resc[tpp];
+if (res != null){
+setupView(res);
+return;
+}
+
+$.getJSON(url,params, function(data) {
+
+if (data['status'] != Jamun.loginOK)
+{
+//alert(url + ":" + data['status']);
+JamunUI.renderLogin();
+return;
+}
+
+var res = data['response'];
+setupView(res);
+resc[tpp] = res;
+});
+
+function setupView(res){
+Jamun.cache[Jamun.presentPage] = res;
+var attrs = Jamun.getPresentColumns();
+
+
+JamunUI.appendHeaderToGrid(Jamun.presentPage + "grid",attrs);
+
+
+
+
+	$("#" + Jamun.presentPage + "grid tbody").click(function(event) {
+		$(JamunUI.grids[Jamun.presentPage].fnSettings().aoData).each(function (){
+			$(this.nTr).removeClass('row_selected');
+		});
+		$(event.target.parentNode).addClass('row_selected');
+	});
+	
+//begin new
+    $('#' + Jamun.presentPage + 'newButton').click( function() {
+
+var attrs = Jamun.getPresentColumns();
+var newfields = "";
+for (var ct = 0; ct < attrs.length;ct++){
+		newfields += '<label for="' + attrs[ct] + '">' + Jamun.getLabel(attrs[ct]) + '</label>';
+
+		var fin = Jamun.pageProperties[Jamun.presentPage][attrs[ct] + ".input"];
+
+		if (fin){
+var inpt = fin["type"];
+switch(inpt)
+{
+case "select":
+newfields += JamunUI.createSelect(attrs[ct],fin["options"],null,false);
+  break;
+case "selectfromserverobj":
+var son = fin["serverobj"];
+var sonc = Jamun.cache[son];
+
+if (sonc == null){
+sonc = Jamun.getServerObj(son);
+Jamun.cache[son] = sonc;
+}
+
+var mp = JamunUtil.getMapFromArrays(sonc,sonc,fin["column"]);
+newfields += JamunUI.createSelect(attrs[ct],mp,null,false);
+  break;
+
+default:
+newfields += '<input type="text" value="" name="' + attrs[ct] + '" id="' + attrs[ct] + '" class="text ui-widget-content ui-corner-all" /\>' ;
+
+}
+
+}else
+		newfields += '<input type="text" value="" name="' + attrs[ct] + '" id="' + attrs[ct] + '" class="text ui-widget-content ui-corner-all" /\>' ;
+
+}
+
+var NewCreateDialog = $('<div id="' + Jamun.presentPage + 'NewDialog"><p>' + Jamun.getLabel("confirm_new") + '</p>' +
+	'<form>' +
+	'<fieldset>' + newfields +
+	'</fieldset>' +
+	'</form>' +
+'</div>'
+);
+        NewCreateDialog.dialog({
+	open: function(event, ui) { $(this).parent().children().children('.ui-dialog-titlebar-close').hide();},
+
+	    autoOpen: true,
+            modal: true,
+	    width: 450,
+            title: Jamun.getLabel("New"),
+            show: 'clip',
+            hide: 'clip',
+            buttons: [
+                {text: Jamun.getLabel("New"), click: function() {
+var vals = JamunUI.getInputValues(Jamun.presentPage + "NewDialog",attrs);
+
+var url = Jamun.getServerObjURL(Jamun.presentPage,'create');
+$.getJSON(url,vals
+, function(data) {
+
+if (data['status'] != Jamun.loginOK)
+{
+
+if ( data['code']  )
+{
+if (data['code'] == 'unable_to_authenticate')
+{
+$('#' + Jamun.presentPage + 'NewDialog').dialog("close");
+$('#' + Jamun.presentPage + 'NewDialog').remove();
+JamunUI.renderLogin();
+}else JamunUI.renderError(data  );
+}
+else alert(Jamun.getLabel('error')  );
+
+
+return;
+}
+var nr = Jamun.listValues(vals);
+nr.push(data['response']);
+JamunUI.appendRowToGrid(Jamun.presentPage,nr,data['response']);
+Jamun.addCacheRow(Jamun.listValues(vals),data['response']);
+$('#' + Jamun.presentPage + 'NewDialog').dialog("close");
+$('#' + Jamun.presentPage + 'NewDialog').remove();
+});
+
+}},
+                {text: Jamun.getLabel("Cancel"), click: function() {
+$(this).dialog("close");
+$('#' + Jamun.presentPage + 'NewDialog').remove();
+}}
+            ]
+        });
+
+  
+    } );
+//end new
+
+//begin update
+    $('#' + Jamun.presentPage + 'editButton').click( function() {
+
+        var anSelected = JamunUI.fnGetSelected( JamunUI.grids[Jamun.presentPage] );
+
+        if ( anSelected.length !== 0 ) {
+var sData = JamunUI.grids[Jamun.presentPage].fnGetData( anSelected[0] );
+var pdata = JamunUtil.getRowInArray(Jamun.cache[Jamun.presentPage],1,attrs.length,sData[attrs.length]);
+//alert(pdata + ":" + sData[attrs.length]);
+var NewUpdateDialog = $('<div id="' + Jamun.presentPage + 'EditDialog"><p>' + Jamun.getLabel("confirm_update") + '</p>' +
+	'<form>' +
+	'<fieldset>' +
+
+function(){
+var editfields = "";
+var disf = Jamun.pageProperties[Jamun.presentPage]["disable.edit.fields"];
+if (disf == null)
+disf = new Array();
+
+for (ct = 0; ct < attrs.length;ct++){
+		editfields += '<label for="' + attrs[ct] + '">' + Jamun.getLabel(attrs[ct]) + '</label>';
+
+var dist = "";
+if (disf.indexOf(attrs[ct]) > -1)
+	dist = ' disabled="disabled" ';
+
+
+		var fin = Jamun.pageProperties[Jamun.presentPage][attrs[ct] + ".input"];
+		if (fin){
+var inpt = fin["type"];
+switch(inpt)
+{
+case "select":
+editfields += JamunUI.createSelect(attrs[ct],fin["options"],pdata[ct],disf.indexOf(attrs[ct]) > -1);
+  break;
+case "selectfromserverobj":
+var son = fin["serverobj"];
+var sonc = Jamun.cache[son];
+if (sonc == null){
+sonc = Jamun.getServerObj(son);
+Jamun.cache[son] = sonc;
+}
+var mp = JamunUtil.getMapFromArrays(sonc,sonc,fin["column"]);
+
+editfields += JamunUI.createSelect(attrs[ct],mp,pdata[ct],disf.indexOf(attrs[ct]) > -1);
+  break;
+
+default:
+	editfields += '<input type="text" ' + dist + 'value="' + pdata[ct] + '" name="' + attrs[ct] + '" id="' + attrs[ct] + '" class="text ui-widget-content ui-corner-all" /\>';
+
+}
+
+}else
+		editfields += '<input type="text" ' + dist + 'value="' + pdata[ct] + '" name="' + attrs[ct] + '" id="' + attrs[ct] + '" class="text ui-widget-content ui-corner-all" /\>';
+}
+return editfields;
+}() + 
+
+	'</fieldset>' +
+	'</form>' +
+'</div>'
+);
+        NewUpdateDialog.dialog({
+	open: function(event, ui) { $(this).parent().children().children('.ui-dialog-titlebar-close').hide();},
+
+	    autoOpen: true,
+            modal: true,
+	    width: 450,
+            title: Jamun.getLabel("Update"),
+            show: 'clip',
+            hide: 'clip',
+            buttons: [
+                {text: Jamun.getLabel("Update"), click: function() {
+
+var vals = JamunUI.getInputValues(Jamun.presentPage + "EditDialog",attrs);
+vals["shaftid"] = sData[attrs.length]
+var url = Jamun.getServerObjURL(Jamun.presentPage,'update');
+$.getJSON(url,vals
+, function(data) {
+
+if (data['status'] != Jamun.loginOK)
+{
+
+$('#' + Jamun.presentPage + 'EditDialog').dialog("close");
+$('#' + Jamun.presentPage + 'EditDialog').remove();
+JamunUI.renderLogin();
+return;
+}
+
+var res = data['response'];
+if (res != true){
+if ( data['code'] && data['code'] == 'unable_to_authenticate' ){
+$('#' + Jamun.presentPage + 'EditDialog').dialog("close");
+$('#' + Jamun.presentPage + 'EditDialog').remove();
+JamunUI.renderLogin();
+}
+else
+alert(Jamun.getLabel('error')  );
+
+return;
+}
+
+
+var pos = JamunUI.grids[Jamun.presentPage].fnGetPosition(anSelected[0]);
+
+    
+
+var cter = 0;
+for (var key in vals) {
+
+if (key != "shaftid") {  
+JamunUI.grids[Jamun.presentPage].fnUpdate(JamunUI.formatField(key,vals[key]), pos, cter);
+Jamun.updateCacheField(cter,vals[key],vals["shaftid"]);
+}
+
+cter = cter + 1;
+
+}
+
+
+$('#' + Jamun.presentPage + 'EditDialog').dialog("close");
+$('#' + Jamun.presentPage + 'EditDialog').remove();
+});
+
+}},
+                {text: Jamun.getLabel("Cancel"), click: function() {
+$(this).dialog("close");
+$('#' + Jamun.presentPage + 'EditDialog').remove();
+}}
+            ]
+        });
+
+     }
+    } );
+//end update
+
+    $('#' + Jamun.presentPage + 'deleteButton').click( function() {
+
+    var anSelected = JamunUI.fnGetSelected( JamunUI.grids[Jamun.presentPage] );
+        if ( anSelected.length !== 0 ) {
+
+
+
+var NewDialog = $('<div id="' + Jamun.presentPage + 'DeleteDialog"><p>' + Jamun.getLabel("confirm_delete") + '</p></div>');
+        NewDialog.dialog({
+	open: function(event, ui) { $(this).parent().children().children('.ui-dialog-titlebar-close').hide();},
+
+	    autoOpen: true,
+            modal: true,
+            title: Jamun.getLabel("Confirm"),
+            show: 'clip',
+            hide: 'clip',
+            buttons: [
+                {text: Jamun.getLabel("Submit"), click: function() {
+$(this).dialog("close");
+var sData = JamunUI.grids[Jamun.presentPage].fnGetData( anSelected[0] );
+var url = Jamun.getServerObjURL(Jamun.presentPage,'delete');
+if (Jamun.pageProperties[Jamun.presentPage]["delete.related.serverobjs"] != null)
+{
+Jamun.batch("delete",{
+"shaftid":sData[sData.length - 1]
+},attrs,sData,new ProcessDeleteResult(anSelected[0],sData));
+}
+else
+$.getJSON(url,{
+"shaftid":sData[sData.length - 1]
+}
+, function(data) {new ProcessDeleteResult(anSelected[0],sData).process(data);});
+
+
+
+}},
+                {text: Jamun.getLabel("Cancel"), click: function() {$(this).dialog("close")}}
+            ]
+        });
+
+     }
+    } );
+
+
+
+
+
+	 JamunUI.grids[Jamun.presentPage] = $('#' + Jamun.presentPage + 'grid').dataTable( {
+		"bSortClasses": false,
+		"bJQueryUI": true,
+		"bJUI": true
+	} );
+
+JamunUI.setUpPageSelect();
+
+for (ct = 1; ct < res.length;ct++){
+	var row = res[ct];
+	JamunUI.appendRowToGrid(Jamun.presentPage,row);
+
+}
+
+$("#" + Jamun.presentPage + "rpageselect").change(function(event) {JamunUI.selectPage();});
+
+}
+
+//);
+
+
+
+
+}();
+
+
+
+
+
+
+
+</script>

@@ -1,0 +1,4 @@
+{
+"deployment.mode":"production",
+"pageList":{"shaftusermgr":true,"pathprivileges":true,"publicpaths":["member","enduser"]}
+}
