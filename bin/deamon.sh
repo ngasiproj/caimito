@@ -1,9 +1,5 @@
 #!/bin/sh
-<<<<<<< HEAD
 #cd $CAIMITO_HOME/bin
-=======
-cd $CAIMITO_HOME/bin
->>>>>>> 81b81b090d652d7b3c1de4359597c4836eb617da
 export JAVA_OPTS="-Dsun.net.inetaddr.ttl=0 -Dnetworkaddress.cache.ttl=0"
 
 

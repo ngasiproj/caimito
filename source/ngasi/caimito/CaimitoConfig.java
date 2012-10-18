@@ -51,17 +51,13 @@ public static String caimitouserreqobj = "caimitouserreqobj";
 	public static boolean cacheable = true;
 	public static String serverinfo = "Caimito";
 	public static String CAIMITO_CSS = null;
-<<<<<<< HEAD
-	public static String version = "0.8";
-	public static long requestTimeout = 30 * 60 * 1000;
+	public static String version = "0.9.1";
+	public static long requestTimeout = 130 * 60 * 1000L;
 	public static int single_cloud_account_with_single_storage = 1;
 	public static int cloud_accounts_for_administration_only = 2;
 	
 	public static int cloud_setup=single_cloud_account_with_single_storage;
 	
-=======
-	public static String version = "0.4";
->>>>>>> 81b81b090d652d7b3c1de4359597c4836eb617da
 	public static void init()throws CaimitoException{
 			if (! new File(getConfigFile()).exists())
 			{
@@ -78,7 +74,9 @@ public static String caimitouserreqobj = "caimitouserreqobj";
 			shaftapp = getConfig().getString("shaft.app");
 			serverinfo = getConfig().getString("serverinfo");
 			CAIMITO_CSS = getConfig().getString("CAIMITO_CSS");
-			requestTimeout = getConfig().getLong("request.timeout")  * 60 * 1000;
+			
+			if (getConfig().get("request.timeout") != null)
+			requestTimeout = getConfig().getLong("request.timeout")  * 60 * 1000L;
 			if (getConfig().get("cachedir") != null)
 				cachedir = getConfig().getString("cachedir");
 			
